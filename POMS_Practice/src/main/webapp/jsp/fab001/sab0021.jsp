@@ -119,7 +119,7 @@
 									<div class="input-group input-file" name="">
 							    		<input type="text" class="form-control" placeholder='Choose a file...' id="file-image" />			
 							            <span class="input-group-btn">
-							        		<button class="btn btn-default btn-brower" id="btn-file-image" type="button">Browse</button>
+							        		<button class="btn btn-default btn-brower" id="btn-file-image" type="file">Browse</button>
 							    		</span>
 									</div>
 								</div>

@@ -107,13 +107,19 @@ body{
 	line-height: 38px;
 	cursor: pointer;
 	padding-right: 10px;
+	margin-left: 10px;
+	
 }
 
 .title-row {
 	border-bottom: 2px solid gray;
 	margin-bottom: 15px;
+	margin-left: 1px;
 }
 
-.main{
-	margin-left: 10px;
+.btn-brower{
+	
+	background-color: #eee;
+	padding-top: 6px !important;
+    padding-bottom: 6px !important;
 }
