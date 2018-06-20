@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC0024">
+	<!-- Get data order no -->
+	<select id="getListOrderDoByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean" resultClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		SELECT ORDER_ID       AS orderId,
+		  	TO_CHAR(UPDATED_DT_LOCAL, 'DD-Mon-YY HH24:MI:SS') AS timestamp,
+		  	DO_NO               AS doNo,
+		  	SEQ_NO              AS seqNo,
+		  	CUSTOMER_COMPANY_CD AS customerCompanyCd,
+		  	DO_SIGNBACK_FG      AS doSignbackFg,
+		  	TO_CHAR(DELIVER_DT, 'DD-Mon-YY') AS deliverDt,
+		  	DELETE_FG           AS deleteFG,
+		  	DO_GENERATED_FG     AS doGeneratedFg
+		FROM ORDER_DO
+			WHERE ORDER_ID = #orderId# AND DELETE_FG IS NULL
+			ORDER BY DO_NO
+	</select>
+	
+	<!-- get quotation no -->
+	<select id="getQuotationNo" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean" resultClass="java.lang.String">
+		SELECT QUOTE_MRC || ' / ' || QUOTE_OTC FROM ORDERS WHERE ORDER_ID = #orderId#
+	</select>
+	
+	<!-- Get total record -->
+	<select id="checkExist" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean" resultClass="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			ORDER_DO
+		WHERE
+			ORDER_ID = #orderId#
+			AND DO_NO = #doNo#
+	</select>
+		
+	<!-- Get data company table by company code -->
+	<select id="getCompanyCdByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean" resultClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		SELECT 
+			COMPANY_CD AS companyCd,
+			COUNTRY_CD AS countryCd
+		FROM ORDERS
+		WHERE ORDER_ID = #orderId#
+	</select>
+	
+	<!-- Get seqNo by order id -->
+	<select id="getSeqNoByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean" resultClass="int">
+		SELECT 
+			COALESCE(MAX(SEQ_NO), 0) AS seqNo
+		FROM 
+			ORDER_DO
+		<!-- WHERE
+			ORDER_ID = #orderId# -->
+	</select>
+	
+	<!-- Insert record -->
+	<insert id="doInsert" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		INSERT INTO ORDER_DO (
+			ORDER_ID
+			,DO_NO
+			,SEQ_NO
+			,CUSTOMER_COMPANY_CD
+			,DO_SIGNBACK_FG
+			,DELIVER_DT
+			,DELETE_FG
+			,DO_GENERATED_FG
+			,UPDATED_USER
+			,UPDATED_DT_UTC
+			,UPDATED_DT_SERVER
+			,UPDATED_DT_LOCAL
+			,EXCLUSIVE_FG
+			) VALUES (
+			#orderId#
+			,#doNo#
+			,#seqNo#
+			,#customerCompanyCd#
+			,#doSignbackFg#
+			,TO_DATE(#deliverDt#, 'DD-Mon-YY HH24:MI:SS')
+			,#deleteFg#
+			,#doGeneratedFg#
+			,#updatedUser#
+			,SYSDATE - #timeDifference#/24
+			,SYSDATE
+			,#updatedDtLocal#
+			,#exclusiveFg#
+			)
+    </insert>
+    
+	<!-- Update record -->
+    <update id="doUpdate" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DO
+		SET UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+			,EXCLUSIVE_FG = #exclusiveFg#
+		WHERE
+		ORDER_ID = #orderId#
+		AND DO_NO = #doNo#
+   </update>  
+    
+	<!-- Signed Upload/Delete -->
+   <update id="doSignedUploadDelete" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DO
+		SET DO_SIGNBACK_FG = #doSignbackFg# 
+			,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE
+		ORDER_ID = #orderId#
+		AND DO_NO = #doNo#
+	</update>
+    
+	<!-- Generated Upload/Delete -->
+   <update id="doGeneratedUploadDelete" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DO
+		SET DO_GENERATED_FG = #doGeneratedFg# 
+			,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE
+		ORDER_ID = #orderId#
+		AND DO_NO = #doNo#
+	</update>
+    
+	<!-- Delete -->
+   <update id="doDelete" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DO
+		SET DELETE_FG = #deleteFg# 
+			,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE
+		ORDER_ID = #orderId#
+		AND DO_NO = #doNo#
+	</update>
+    
+	<!-- Save -->
+   <update id="doSave" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DO SET 
+			DELIVER_DT = TO_DATE(#deliverDt#, 'DD-Mon-YY HH24:MI:SS') 
+			,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE
+		ORDER_ID = #orderId#
+		AND DO_NO = #doNo#
+	</update>
+	
+	<!-- Get data order no -->
+	<select id="searchDeliveryOrder" resultClass="jp.co.cyms.apps.fac001.bean.DownloadDeliveryOrderBean" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean">
+		SELECT 
+           CATEGORY_MST.SECTION_NAME AS sectionName,
+           CATEGORY_MST.CATEGORY_CD AS categoryCd,
+           NVL(CATEGORY_MST.DISPLAY_ORDER, 0) AS categoryDisplayOrder,
+           ORDER_LEASE.ITEM_CD            AS itemCd,
+           ITEM_MST.ITEM_NAME             AS itemName,
+           ITEM_DTL_MST.REMARK            AS remark,
+           ORDER_LEASE.SERIAL_NO          AS serialNo,
+           T1.QTY            			  AS itemQty
+         FROM ORDER_LEASE
+         LEFT JOIN ORDER_DTL
+         ON ORDER_LEASE.ORDER_ID     = ORDER_DTL.ORDER_ID
+         AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+         LEFT JOIN ORDERS
+         ON ORDERS.ORDER_ID = ORDER_DTL.ORDER_ID
+         LEFT JOIN CATEGORY_MST
+         ON CATEGORY_MST.CATEGORY_CD    = ORDER_LEASE.CATEGORY_CD
+         AND CATEGORY_MST.CATEGORY_TYPE = 'MRC'
+         LEFT JOIN ITEM_MST
+         ON ITEM_MST.ITEM_CD     = ORDER_LEASE.ITEM_CD
+         AND ITEM_MST.COUNTRY_CD = ORDERS.COUNTRY_CD
+         LEFT JOIN ITEM_DTL_MST
+         ON ITEM_DTL_MST.CATEGORY_CD = ORDER_LEASE.CATEGORY_CD
+         AND ITEM_DTL_MST.ITEM_CD    = ORDER_LEASE.ITEM_CD
+         INNER JOIN
+             (SELECT COUNT(ORDER_LEASE.ITEM_CD) AS QTY,
+               ORDER_LEASE.ITEM_CD,
+               ORDER_LEASE.ORDER_ID,
+               ORDER_LEASE.CATEGORY_CD
+             FROM ORDER_LEASE
+             WHERE ORDER_LEASE.SERIAL_NO IS NOT NULL
+             AND ORDER_LEASE.ORDER_ID  = #orderId#
+             AND ORDER_LEASE.DO_NO  = #doNo#
+             GROUP BY ORDER_LEASE.ITEM_CD,
+               ORDER_LEASE.ORDER_ID,
+               ORDER_LEASE.CATEGORY_CD
+             ) T1 ON T1.ORDER_ID = ORDER_LEASE.ORDER_ID 
+               AND T1.ITEM_CD = ORDER_LEASE.ITEM_CD
+               AND T1.CATEGORY_CD = ORDER_LEASE.CATEGORY_CD
+         WHERE ORDER_LEASE.ORDER_ID  = #orderId#
+         AND ORDER_LEASE.DO_NO  = #doNo#
+         AND ORDER_LEASE.SERIAL_NO  IS NOT NULL
+         AND ORDER_DTL.LEASE_TYPE    = 'MRC'
+	</select>
+	
+	<!-- Get data header for download delivery -->
+	<select id="getDataHeaderForDownloadDelivery" resultClass="jp.co.cyms.apps.fac001.bean.DownloadDeliveryOrderBean" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean">
+		SELECT 
+		  ORDER_DO.DO_NO      AS doNo,
+		  COMPANY_MST.COMPANY_NAME AS companyName,
+		  COMPANY_MST.ATTN_TO_NAME AS attnToName,
+		  ORDERS.QUOTE_MRC AS quoteMrc,
+		  TO_CHAR(ORDER_DO.DELIVER_DT, 'DD-Mon-YYYY') AS deliverDt, 
+		  ORDERS.COMPANY_CD AS companyCd,
+		  ORDERS.COuntry_CD as countryCd
+		FROM ORDER_DO
+		  LEFT JOIN COMPANY_MST
+		  	ON ORDER_DO.CUSTOMER_COMPANY_CD = COMPANY_MST.COMPANY_CD
+		  LEFT JOIN ORDERS
+        	ON ORDER_DO.ORDER_ID = ORDERS.ORDER_ID
+		WHERE
+		  ORDER_DO.DO_NO = #doNo#
+		  AND ORDERS.ORDER_ID = #orderId#
+	</select>
+	
+	<!-- Get data order_lease -->
+	<select id="getDataOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean" resultClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean">
+		SELECT
+		    ORDER_ID AS orderId,
+		    CATEGORY_CD AS categoryCd,
+		    ITEM_CD AS itemCd,
+		    DISPLAY_ORDER AS displayOrder,
+		    SERIAL_NO AS serialNo,
+		    DO_NO AS doNo
+		FROM ORDER_LEASE
+		    WHERE
+		        ORDER_ID = #orderId#
+		        <dynamic>
+		        	<isNotNull property="serialNo">
+		        		AND SERIAL_NO IS NOT NULL
+		        	</isNotNull>
+		        </dynamic>
+		        <dynamic>
+		        	<isNull property="doNo">
+		        		AND DO_NO IS NULL
+		        	</isNull>
+		        	<isNotNull property="doNo">
+		        		AND DO_NO = #doNo#
+		        	</isNotNull>
+		        </dynamic>
+	</select>
+	
+	<!-- Update record in order_lease -->
+	<update id="updateOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean">
+		UPDATE ORDER_LEASE SET
+			UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+			<dynamic>
+				<isEqual property="updateGenerateNew" compareValue="true">
+                	,DO_NO = #doNo#
+                	,DELIVER_DT = #deliverDt#
+					,END_DT = ADD_MONTHS(#deliverDt# -1, 48)
+					<!-- LongND remove default value for WARRANTY_DT -->
+					<!-- ,WARRANTY_DT = ADD_MONTHS(#deliverDt# -1, 36) -->
+					,DELIVER_FG = #deliverFg#
+					,DELIVER_MTH = #deliverDt#
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateSave" compareValue="true">
+                	,DELIVER_DT = #deliverDt#
+					,END_DT = ( CASE 
+									WHEN DELIVER_DT IS NOT NULL
+									THEN ADD_MONTHS(#deliverDt# -1, 48)
+									ELSE END_DT
+								END )
+					,WARRANTY_DT = ( CASE 
+										WHEN DELIVER_DT IS NOT NULL
+										THEN ADD_MONTHS(#deliverDt# -1, 36)
+										ELSE WARRANTY_DT
+									END )
+					,DELIVER_FG = ( CASE 
+										WHEN DELIVER_DT IS NOT NULL
+										THEN #deliverFg#
+										ELSE NULL
+									END )
+					,DELIVER_MTH = #deliverDt#
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateGenerateLinkDoNoNull" compareValue="true">
+                	,DO_NO = #doNo#
+                	,DELIVER_DT = #deliverDt#
+					,END_DT = ADD_MONTHS(#deliverDt# -1, 48)
+					,WARRANTY_DT = ADD_MONTHS(#deliverDt# -1, 36)
+					,DELIVER_FG = #deliverFg#
+					,DELIVER_MTH = #deliverDt#
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateGenerateLink" compareValue="true">
+					,DO_NO = NULL
+                	,DELIVER_DT = NULL
+					,END_DT = NULL
+					,WARRANTY_DT = NULL
+					,DELIVER_FG = NULL
+					,DELIVER_MTH = NULL
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateGenerateDelete" compareValue="true">
+                	,DELIVER_DT = NULL
+					,END_DT = NULL
+					,WARRANTY_DT = NULL
+					,DELIVER_FG = NULL
+					,DELIVER_MTH = NULL
+				</isEqual>
+			</dynamic>
+		WHERE
+			ORDER_ID = #orderId#
+			AND CATEGORY_CD = #categoryCd#
+		    AND ITEM_CD = #itemCd#
+		    AND DISPLAY_ORDER = #displayOrder#
+			<dynamic>
+				<isEqual property="updateSave" compareValue="true">
+					AND DO_NO = #doNo#
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateGenerateLink" compareValue="true">
+					AND DO_NO = #doNo#
+				</isEqual>
+			</dynamic>
+			<dynamic>
+				<isEqual property="updateGenerateDelete" compareValue="true">
+                	AND DO_NO = #doNo#
+				</isEqual>
+			</dynamic>
+	</update>
+	
+	<!-- check exist order_lease -->
+	<select id="checkExistOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean" resultClass="int">
+		SELECT COUNT(*) FROM ORDER_LEASE 
+		WHERE 
+			ORDER_ID = #orderId#
+			AND CATEGORY_CD = #categoryCd#
+		    AND ITEM_CD = #itemCd#
+		    AND DISPLAY_ORDER = #displayOrder#
+	</select>
+    
+	<!-- Get list data from order_dtl table -->
+    <select id="getListDataOrderDtlByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean" 
+    	resultClass="jp.co.cyms.apps.fac001.bean.Pac0022UpdateOrderDtlBean">
+		SELECT 
+			ORDER_DTL.ORDER_ID AS orderId, 
+			ORDER_DTL.CATEGORY_CD AS categoryCd,
+			ORDER_DTL.KDDI_DELIVER_QTY AS kddiDeliverQty,
+			(SELECT CATEGORY_ABBREV FROM CATEGORY_MST WHERE CATEGORY_MST.CATEGORY_CD = ORDER_DTL.CATEGORY_CD) AS categoryAbbrev,
+            (SELECT DISPLAY_ORDER FROM CATEGORY_MST WHERE CATEGORY_MST.CATEGORY_CD = ORDER_DTL.CATEGORY_CD) AS displayOrder
+		FROM ORDER_DTL WHERE ORDER_ID = #orderId# ORDER BY displayOrder
+   </select> 
+   
+	<!-- Update record in order_dtl table -->
+    <update id="updateKddiDeliverQty" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0022UpdateOrderDtlBean">
+		UPDATE ORDER_DTL
+		SET 
+			KDDI_DELIVER_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = #categoryCd#
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+												AND ORDER_LEASE.CATEGORY_CD = #categoryCd#
+										  )
+									END
+								),
+			KDDI_DELIVER_QTY = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = #categoryCd#
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT COUNT(*)
+										    FROM ORDER_LEASE
+										    WHERE DELIVER_DT           IS NOT NULL
+											    AND ORDER_LEASE.ORDER_ID    = #orderId#
+											    AND ORDER_LEASE.CATEGORY_CD = #categoryCd#
+										  )
+									END
+								),
+			DELIVER_FG = ( CASE
+								WHEN ( SELECT COUNT(*)
+									   FROM ORDER_LEASE
+									   WHERE DELIVER_DT           IS NOT NULL
+										   AND ORDER_LEASE.ORDER_ID    = #orderId#
+										   AND ORDER_LEASE.CATEGORY_CD = #categoryCd#
+									  ) = ORDER_DTL.ITEM_QTY
+								THEN '1'
+								ELSE NULL
+								END
+							),
+			UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_DTL.ORDER_ID    = #orderId#
+		AND ORDER_DTL.CATEGORY_CD = #categoryCd#
+   </update>
+   	
+	<!-- Check is delivery all by order id -->
+	<select id="checkIsDeliveryByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean" resultClass="int">
+		SELECT COUNT(*)
+		FROM ORDER_LEASE
+	    LEFT JOIN ORDER_DO ON ORDER_LEASE.ORDER_ID = ORDER_DO.ORDER_ID AND ORDER_LEASE.DO_NO = ORDER_DO.DO_NO
+			WHERE (ORDER_LEASE.DELIVER_DT IS NULL OR ORDER_DO.DO_GENERATED_FG IS NULL)
+			AND ORDER_LEASE.ORDER_ID = #orderId#
+	</select>
+		
+	<!-- Get bill flag by order id -->
+	<select id="getBillFgByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean" resultClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		SELECT BILL_FG AS billFg FROM ORDERS WHERE ORDER_ID = #orderId#
+	</select>
+		
+	<!-- Update bill flag in orders table -->
+	<update id="updateBillFgByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean">
+		UPDATE ORDERS
+		SET BILL_FG      = #billFg#,
+<!-- 		  	BILL_MTH_START = TO_DATE(#billMthStart#, 'Mon-YY'), -->
+<!-- 		  	BILL_MTH_END   = TO_DATE(#billMthEnd#, 'Mon-YY'), -->
+		  	BILL_MTH_START = TRUNC (TO_DATE(#billMthStart#,'YYYY-MM-DD') + 1, 'MM'),
+		  	BILL_MTH_END   = ADD_MONTHS(TRUNC (TO_DATE(#billMthStart#,'YYYY-MM-DD') + 1, 'MM'), 47),
+		  	UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID   = #orderId#
+	</update>
+	
+	<!-- Insert ORDER_STATUS after save DO-->
+	<insert id="insertOrderStatusDeliver" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0022UpdateOrderDtlBean">
+		INSERT INTO ORDER_STATUS (
+			ORDER_ID,
+			DISPLAY_ORDER,
+			TIMESTAMP,
+		   	PHASE,
+		   	ACTION,
+		   	DELIVER_CATEGORY,
+		   	DELIVER_QTY,
+		    UPDATED_USER,
+			UPDATED_DT_UTC,
+			UPDATED_DT_SERVER,
+			UPDATED_DT_LOCAL
+			) 
+			VALUES (
+				#orderId#,
+				(
+					CASE 
+					    WHEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD')) IS NOT NULL
+					    THEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD'))+1
+					    ELSE 1
+				    END
+				),
+				SYSDATE,
+				#phase#,
+				#actionOrderStatus#,
+				#categoryAbbrev#,
+				#kddiDeliverQty#,
+				#updatedUser#,
+				SYSDATE - #timeDifference#/24,
+				SYSDATE,
+				#updatedDtLocal#
+			)
+	</insert>
+	
+	<!-- count item delivered -->
+	<select id="countItemDelivered" resultClass="int" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		SELECT COUNT(*)
+		  FROM ORDER_LEASE
+		  WHERE DELIVER_DT IS NOT NULL
+		  AND ORDER_LEASE.ORDER_ID    = #orderId#
+	</select>
+	
+	<!-- update order_dtl when delete DO -->
+	<update id="updateOrderDtlWhenDeleteDo" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		UPDATE ORDER_DTL
+		SET 
+			KDDI_DELIVER_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+												AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			KDDI_DELIVER_QTY = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT COUNT(*)
+										    FROM ORDER_LEASE
+										    WHERE DELIVER_DT           IS NOT NULL
+											    AND ORDER_LEASE.ORDER_ID    = #orderId#
+											    AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			DELIVER_FG = ( CASE
+								WHEN ( SELECT COUNT(*)
+									   FROM ORDER_LEASE
+									   WHERE DELIVER_DT           IS NOT NULL
+										   AND ORDER_LEASE.ORDER_ID    = #orderId#
+										   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+									  ) = ORDER_DTL.ITEM_QTY
+								THEN '1'
+								ELSE NULL
+								END
+							),
+			KDDI_LEASE_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+										  ) = ( SELECT SUM(ITEM_QTY) FROM ORDER_DTL WHERE ORDER_ID = #orderId# )
+									THEN ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+										  )
+									ELSE NULL
+									END
+								),
+			UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_DTL.ORDER_ID    = #orderId#
+	</update>
+	
+	<!-- get orderDo by doNo -->
+	<select id="getOrderDoByDoNo" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean" resultClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+		SELECT ORDER_ID       AS orderId,
+		  	TO_CHAR(UPDATED_DT_LOCAL, 'DD-Mon-YY HH24:MI:SS') AS timestamp,
+		  	DO_NO               AS doNo,
+		  	SEQ_NO              AS seqNo,
+		  	CUSTOMER_COMPANY_CD AS customerCompanyCd,
+		  	DO_SIGNBACK_FG      AS doSignbackFg,
+		  	TO_CHAR(DELIVER_DT, 'DD-Mon-YY') AS deliverDt,
+		  	DELETE_FG           AS deleteFG,
+		  	DO_GENERATED_FG     AS doGeneratedFg
+		FROM ORDER_DO
+			WHERE ORDER_ID = #orderId# AND DELETE_FG IS NULL
+			AND DO_NO = #doNo#
+	</select>
+	
+	<!-- Count record DO_GENERATED_FG = NULL -->
+	<select id="countRecordGenerateDelete" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean" resultClass="int">
+		SELECT COUNT(*) FROM ORDER_DO WHERE ORDER_ID = #orderId# AND DO_GENERATED_FG IS NULL AND DELETE_FG IS NULL
+	</select>
+	
+	<!-- Get data order_lease when click generate link -->
+	<select id="getDataOrderLeaseGenerateLink" parameterClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean" resultClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean">
+		SELECT
+		    ORDER_ID AS orderId,
+		    CATEGORY_CD AS categoryCd,
+		    ITEM_CD AS itemCd,
+		    DISPLAY_ORDER AS displayOrder,
+		    SERIAL_NO AS serialNo,
+		    DO_NO AS doNo
+		FROM ORDER_LEASE
+		    WHERE
+		        ORDER_ID = #orderId#
+		        <dynamic>
+		        	<isNotNull property="serialNo">
+				        AND SERIAL_NO IS NOT NULL
+						AND (DO_NO = #doNo# OR DO_NO IS NULL)
+					</isNotNull>
+				</dynamic>
+				<dynamic>
+		        	<isNull property="serialNo">
+				        AND SERIAL_NO IS NULL
+						AND DO_NO = #doNo#
+					</isNull>
+				</dynamic>
+	</select>
+	
+	<!-- Insert ORDER_STATUS after save DO-->
+	<insert id="insertOrderStatusByDoNoGroupByCategoryAbbrev" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0022UpdateOrderDtlBean">
+	INSERT
+		INTO ORDER_STATUS
+		  (
+		    ORDER_ID,
+		    DISPLAY_ORDER,
+		    TIMESTAMP,
+		    PHASE,
+		    ACTION,
+		    DELIVER_CATEGORY,
+		    DELIVER_QTY,
+		    UPDATED_USER,
+			UPDATED_DT_UTC,
+			UPDATED_DT_SERVER,
+			UPDATED_DT_LOCAL
+		  )
+		SELECT 
+			#orderId#,
+		  	rownum + (SELECT NVL(MAX(DISPLAY_ORDER), 0) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD')) AS DISPLAYORDER,
+		  	SYSDATE,
+			#phase#,
+			#actionOrderStatus#,
+		  	DELIVERCATEGORY,
+		  	DELIVERQTY,
+			#updatedUser#,
+			SYSDATE - #timeDifference#/24,
+			SYSDATE,
+			#updatedDtLocal#
+		FROM
+		  (
+		  	SELECT 
+		    	CATEGORY_MST.CATEGORY_ABBREV 	AS DELIVERCATEGORY,
+		    	COUNT(*)                     	AS DELIVERQTY
+			FROM ORDER_LEASE
+			LEFT JOIN CATEGORY_MST
+			ON CATEGORY_MST.CATEGORY_CD = ORDER_LEASE.CATEGORY_CD 
+			WHERE DO_NO                 = #phase# AND ORDER_LEASE.ORDER_ID = #orderId#
+			AND TO_DATE(DELIVER_DT, 'YYYY-MM-DD')              = TO_DATE(ORDER_LEASE.UPDATED_DT_LOCAL, 'YYYY-MM-DD')
+			GROUP BY CATEGORY_MST.CATEGORY_ABBREV
+		  )
+	</insert>
+	
+	<!-- Update record in order_dtl table -->
+	<!-- Update KDDI_LEASE_DT -->
+    <update id="updateKddiLeaseDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024ParamBean">
+		UPDATE ORDER_DTL
+		SET 
+			KDDI_LEASE_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+										  ) = ( SELECT SUM(ITEM_QTY) FROM ORDER_DTL WHERE ORDER_ID = #orderId# )
+									THEN ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+										  )
+									ELSE NULL
+									END
+								),
+			UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_DTL.ORDER_ID    = #orderId#
+   </update>
+   
+   <!-- get lastest DELIVER_MTH of the order -->
+	<select id="getLastestDelivery" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT TO_CHAR(MAX(DELIVER_MTH), 'YYYY-MM-DD')
+		FROM ORDER_LEASE
+		WHERE ORDER_ID = #orderId#
+	</select>
+	
+	<!-- Update BILL_FG BILL_MTH_START BILL_MTH_START = NULL-->
+	<update id="updateBillFgWhenDelete" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0024Bean">
+	UPDATE ORDERS
+		SET BILL_FG      = NULL,
+		  	BILL_MTH_START = NULL,
+		  	BILL_MTH_END   = NULL,
+		  	UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID   = #orderId#
+	</update>
+</sqlMap>

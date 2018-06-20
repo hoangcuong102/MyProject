@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<!-- SqlMapConfig定義 -->
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" />
+	<sqlMap resource="sqlMap/apps/common.xml" />
+	<sqlMap resource="sqlMap/apps/faa001.xml" />
+	<sqlMap resource="sqlMap/apps/fab0011.xml" />
+	<sqlMap resource="sqlMap/apps/fab0021.xml" />
+	<sqlMap resource="sqlMap/apps/fab0031.xml" />
+	<sqlMap resource="sqlMap/apps/fac0011.xml" />
+	<sqlMap resource="sqlMap/apps/fac0021.xml" />
+	<sqlMap resource="sqlMap/apps/fac0022.xml" />
+	<sqlMap resource="sqlMap/apps/fac0023.xml" />
+	<sqlMap resource="sqlMap/apps/fac0024.xml" />
+	<sqlMap resource="sqlMap/apps/fad0011.xml" />
+	<sqlMap resource="sqlMap/apps/fad0021.xml" />
+</sqlMapConfig>

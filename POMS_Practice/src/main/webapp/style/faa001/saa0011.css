@@ -1,0 +1,73 @@
+input, textarea, select{
+	font-family: 'Tahoma';
+	font-size:20px !important;
+	}
+body {
+	font-family: 'Tahoma', 'Arial', 'Times New Roman', 'Meiryo UI';
+	margin : 0;
+	padding:  0;
+	background: #FFF url('../../images/bg_login.jpg') no-repeat center center fixed; 
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+  	background-size: 100% 100%;
+}
+
+.login-box {
+    margin: 0 auto;
+	padding: 0;
+	overflow: hidden;
+	height: 853px;
+	width: 871px;
+	border: 0px solid #003367;
+	background:url('../../images/login_form.png') no-repeat center center;
+}
+
+.login-input {
+	width: 480px;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+	border-bottom: 0px;
+	height: 37px;
+	line-height: 24px;
+}
+.select-login {
+    width: 550px !important;
+}
+.select2-container .select2-selection--single {
+	height: 45px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 40px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+	line-height : 40px !important;
+	font-size : 18px !important;
+}
+.select2-dropdown.select2-dropdown--below{
+    font-size : 18px !important;
+}
+.message_space {
+    margin-top: 34%;
+    margin-left: 15.5%;
+    height: 30px;
+    width: 616px;
+}
+.login-button {
+	background:url('../../images/btn_login.png') no-repeat;
+	background-size: 100% 100%;
+    width: 535px ;
+    height: 70px ;
+    border: none;
+    overflow: hidden;
+}
+
+#btn-submit:hover{
+	background:url('../../images/btn_login_hover.png') no-repeat;
+}
+
+#btn-submit:focus{
+	background:url('../../images/btn_login_onclick.png') no-repeat;
+}

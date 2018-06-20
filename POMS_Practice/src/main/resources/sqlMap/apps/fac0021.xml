@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC0021">
+	<!-- get all company code -->
+	<select id="getAllCompanyCd" resultClass="java.lang.String">
+		SELECT COMPANY_MST.COMPANY_CD
+			FROM COMPANY_MST 
+			LEFT JOIN COUNTRY_MST ON COMPANY_MST.COUNTRY_CD = COUNTRY_MST.COUNTRY_CD 
+			ORDER BY COUNTRY_MST.DISPLAY_ORDER
+	</select>
+
+	<!-- get company code when [USER_MST].USER_AUTHORITY = "1" -->
+	<select id="getCompanyCd" parameterClass="jp.co.cyms.apps.faa001.bean.UserBean"
+		resultClass="java.lang.String">
+		SELECT COMPANY_CD FROM USER_MST WHERE USER_ID = #userId#
+	</select>
+
+	<!-- get orderDtl -->
+	<!-- when click button search, clear -->
+	<select id="searchOrderDtl" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean" 
+		resultClass="jp.co.cyms.apps.fac001.bean.Pac0021Bean">
+		SELECT
+			orderDtl.ORDER_ID AS orderId,
+			orderDtl.deptCd AS deptCd,
+			orderDtl.ttlMrc AS ttlMrc,
+			orderDtl.ttlOtc AS ttlOtc,
+			orderDtl.categoryAbbrev AS categoryAbbrev,
+			orderDtl.categoryName AS categoryName,
+			orderDtl.categoryCd AS categoryCd,
+			orderDtl.displayOrder AS displayOrder,
+			orderDtl.ITEM_QTY AS quantity,
+			TO_CHAR(orderDtl.UPDATED_DT_LOCAL, 'DD-MON-YY') AS lastUpdated,
+			orderDtl.UPDATED_USER AS updatedByUser,
+			TO_CHAR(orderDtl.SANKYU_REGIST_DT, 'DD-Mon') AS sankyuRegistDt,
+			TO_CHAR(orderDtl.SANKYU_ORDER_DT, 'DD-Mon') AS sankyuOrderDt,
+			TO_CHAR(orderDtl.SEA_REQUEST_DT, 'DD-Mon') AS seaRequestDt,
+			TO_CHAR(orderDtl.KDDI_ACCEPT_DT, 'DD-Mon') AS kddiAcceptDt,
+			TO_CHAR(orderDtl.KDDI_ORDER_DT, 'DD-Mon') AS kddiOrderDt,
+			TO_CHAR(orderDtl.KDDI_RECEIVE_DT, 'DD-Mon') AS kddiReceiveDt,
+			orderDtl.KDDI_DELIVER_QTY AS kddiDeliverQty,
+			TO_CHAR(orderDtl.KDDI_DELIVER_DT, 'DD-Mon') AS kddiDeliverDt,
+			TO_CHAR(orderDtl.KDDI_LEASE_DT, 'DD-Mon') AS kddiLeaseDt,
+			orderDtl.deleteFg AS deleteFg,
+			orderDtl.userCreateOrder AS userCreateOrder,
+			orderDtl.kddiDeliverQtyDoNo AS kddiDeliverQtyDoNo,
+			orderDtl.kddiDeliverDtDoNo AS kddiDeliverDtDoNo,
+			orderDtl.kddiDeliverDtDoNoTypeDate AS kddiDeliverDtDoNoTypeDate,
+			orderDtl.seqNo AS seqNo,
+			orderDtl.countRecordDeliver AS countRecordDeliver,
+    		orderDtl.countDoSignback AS countDoSignback
+		FROM
+			(
+				SELECT
+                    DTL.*,
+                    ORDERS.ORDER_ID AS ORDERS_ID,
+                    ORDERS.DEPT_CD AS deptCd,
+                    ORDERS.TTL_MRC AS ttlMrc,
+                    ORDERS.TTL_OTC AS ttlOtc,
+                    ORDERS.DELETE_FG AS deleteFg,
+                    CATEGORY.CATEGORY_ABBREV AS categoryAbbrev,
+                    CATEGORY.CATEGORY_NAME AS categoryName,
+                    CATEGORY.CATEGORY_CD AS categoryCd,
+                    CATEGORY.DISPLAY_ORDER AS displayOrder,
+                    ORDERS.UPDATED_USER AS userCreateOrder,
+                    orderLeaseDo.itemDeliverQty AS kddiDeliverQtyDoNo,
+                    TO_CHAR(orderLeaseDo.deliverDt, 'DD-Mon') AS kddiDeliverDtDoNo,
+                    orderLeaseDo.deliverDt AS kddiDeliverDtDoNoTypeDate,
+                    orderLeaseDo.seqNo AS seqNo,
+                    orderLeaseDo1.countRecordDeliver AS countRecordDeliver,
+                    (SELECT COUNT(*)
+			            FROM ORDER_DO
+			            WHERE ORDER_DO.ORDER_ID = ORDERS.ORDER_ID
+			            AND DO_SIGNBACK_FG      = '1'
+			        ) AS countDoSignback
+                    <dynamic>
+                    	<isEqual property="expiringOrders" compareValue="true">
+                    		,ORDER_EXPIRING.ORDER_ID AS orderIdExpiring
+                    	</isEqual>
+                    </dynamic>
+				FROM ORDER_DTL DTL
+                    LEFT JOIN ORDERS ON DTL.ORDER_ID = ORDERS.ORDER_ID
+                    LEFT JOIN CATEGORY_MST CATEGORY ON DTL.CATEGORY_CD = CATEGORY.CATEGORY_CD
+                    LEFT JOIN (
+						        SELECT 
+						            LEASE.ORDER_ID AS orderLeaseId,
+						            LEASE.CATEGORY_CD AS categoryCd,
+						            LEASE.ITEM_CD AS itemCd,
+						            DO.ORDER_ID AS orderDoId,
+						            DO.DO_NO AS doNo,
+						            DO.DELIVER_DT AS deliverDt,
+						            DO.SEQ_NO AS seqNo,
+						            COUNT(*) AS itemDeliverQty
+						        FROM ORDER_LEASE LEASE
+						            INNER JOIN ORDER_DO DO
+						                ON LEASE.ORDER_ID = DO.ORDER_ID 
+						                AND LEASE.DO_NO = DO.DO_NO 
+						            GROUP BY LEASE.ORDER_ID,
+						            	LEASE.CATEGORY_CD,
+						            	LEASE.ITEM_CD,
+						            	DO.ORDER_ID, 
+						            	DO.DO_NO,
+						            	DO.DELIVER_DT,
+						            	DO.SEQ_NO
+						            ORDER BY LEASE.CATEGORY_CD
+						    ) orderLeaseDo 
+						ON DTL.ORDER_ID = orderLeaseDo.orderLeaseId AND DTL.CATEGORY_CD = orderLeaseDo.categoryCd
+					LEFT JOIN (
+								SELECT orderLeaseId, categoryCd, COUNT(*) AS countRecordDeliver FROM (
+							    	SELECT LEASE.ORDER_ID AS orderLeaseId,
+							        	LEASE.CATEGORY_CD  AS categoryCd,
+							            LEASE.ITEM_CD      AS itemCd,
+							            DO.ORDER_ID        AS orderDoId,
+							            DO.DO_NO           AS doNo,
+							            COUNT(*)           AS itemDeliverQty
+									FROM ORDER_LEASE LEASE
+							        INNER JOIN ORDER_DO DO
+							        	ON  LEASE.ORDER_ID = DO.ORDER_ID
+							          	AND LEASE.DO_NO    = DO.DO_NO
+							        GROUP BY LEASE.ORDER_ID,
+							        	LEASE.CATEGORY_CD,
+							            LEASE.ITEM_CD,
+							            DO.ORDER_ID,
+							            DO.DO_NO 
+							        ORDER BY LEASE.CATEGORY_CD
+								) GROUP BY orderLeaseId, categoryCd
+							) orderLeaseDo1 
+						ON DTL.ORDER_ID = orderLeaseDo1.orderLeaseId AND DTL.CATEGORY_CD = orderLeaseDo1.categoryCd
+                    <dynamic>
+                    	<isEqual property="nonDelivery" compareValue="true">
+                    		LEFT JOIN (
+                                SELECT DISTINCT ORDER_ID FROM ORDER_DTL
+                                    WHERE KDDI_DELIVER_DT IS NULL
+                                ) ORDER_NON_DELIVERY ON DTL.ORDER_ID = ORDER_NON_DELIVERY.ORDER_ID
+                    	</isEqual>
+                    </dynamic>
+                    <dynamic>
+                    	<isEqual property="expiringOrders" compareValue="true">
+                    		LEFT JOIN (
+                                SELECT 
+                                    ORDER_ID
+                                FROM (
+                                        SELECT * 
+                                            FROM ORDER_LEASE LEASE
+                                            WHERE LEASE.END_DT = (SELECT MAX(END_DT) FROM ORDER_LEASE WHERE ORDER_ID = LEASE.ORDER_ID)
+                                      )
+                                WHERE 
+                                    (END_DT - SYSDATE) &lt;= (SELECT LEASE_RENEW_PERIOD FROM CONFIG)
+                                    AND END_DT IS NOT NULL
+                                ) ORDER_EXPIRING ON DTL.ORDER_ID = ORDER_EXPIRING.ORDER_ID		
+                    	</isEqual>
+                    </dynamic>
+                WHERE 
+                	ORDERS.ORDER_ID IS NOT NULL
+                	<dynamic>
+                		<isNotEmpty property="companyCd">
+                    		AND ORDERS.COMPANY_CD = #companyCd#
+                    	</isNotEmpty>
+                    </dynamic>
+                    <dynamic>
+                    	<isNotEmpty property="entryDateFrom">
+                    		<isNotEmpty property="entryDateTo">
+                    			AND DTL.SANKYU_REGIST_DT BETWEEN TO_DATE(#entryDateFrom# ||' 00:00:00', 'DD-Mon-YY HH24:MI:SS') AND TO_DATE(#entryDateTo# || ' 23:59:59', 'DD-Mon-YY HH24:MI:SS')
+                    		</isNotEmpty>
+                    	</isNotEmpty>
+                    </dynamic>
+                    <dynamic>
+                    	<isEqual property="nonDelivery" compareValue="true">
+                    		AND ORDER_NON_DELIVERY.ORDER_ID IS NOT NULL
+                    	</isEqual>
+                    </dynamic>
+                    <dynamic>
+                    	<isEqual property="expiringOrders" compareValue="true">
+                    		AND ORDER_EXPIRING.ORDER_ID IS NOT NULL
+                    	</isEqual>
+                    </dynamic>
+			) orderDtl
+		ORDER BY orderDtl.ORDER_ID
+	</select>
+	
+	<!-- get orderId expiring -->
+	<select id="getOrderIdExpiring" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean" resultClass="java.lang.String">
+		SELECT ORDERS.ORDER_ID
+		    FROM ORDERS 
+		    INNER JOIN ORDER_LEASE LEASE ON ORDERS.ORDER_ID = LEASE.ORDER_ID
+		    INNER JOIN ORDER_DTL ON ORDERS.ORDER_ID = ORDER_DTL.ORDER_ID AND LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+		    WHERE 
+		        LEASE.END_DT = (SELECT MAX(END_DT) FROM ORDER_LEASE WHERE ORDER_ID = LEASE.ORDER_ID)
+		        <dynamic>
+		        	<isNotEmpty property="companyCd">
+		        		AND ORDERS.COMPANY_CD = #companyCd#
+		        	</isNotEmpty>
+		        </dynamic>
+		        AND LEASE.END_DT IS NOT NULL
+		        AND (LEASE.END_DT - SYSDATE) &lt;= (SELECT LEASE_RENEW_PERIOD FROM CONFIG)
+		        <dynamic>
+                   	<isNotEmpty property="entryDateFrom">
+                   		<isNotEmpty property="entryDateTo">
+                   			AND ORDER_DTL.SANKYU_REGIST_DT BETWEEN TO_DATE(#entryDateFrom# ||' 00:00:00', 'DD/MM/YYYY HH24:MI:SS') AND TO_DATE(#entryDateTo# || ' 23:59:59', 'DD/MM/YYYY HH24:MI:SS')
+                   		</isNotEmpty>
+					</isNotEmpty>
+                </dynamic>
+		        <dynamic>
+                   	<isEqual property="nonDelivery" compareValue="true">
+	        			AND ORDER_DTL.KDDI_DELIVER_DT IS NOT NULL
+	        		</isEqual>
+		        </dynamic>
+	</select>
+	
+	<!-- get orderDtl by orderId -->
+	<select id="getOrderDtlByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean"
+		resultClass="jp.co.cyms.apps.fac001.bean.Pac0021Bean">
+		SELECT
+			DTL.ORDER_ID AS orderId,
+			ORDERS.DEPT_CD AS deptCd,
+			ORDERS.TTL_MRC AS ttlMrc,
+			ORDERS.TTL_OTC AS ttlOtc,
+			DTL.CATEGORY_CD AS categoryAbbrev,
+			DTL.ITEM_QTY AS quantity,
+			TO_CHAR(DTL.UPDATED_DT_LOCAL, 'DD-MON-YY') AS lastUpdated,
+			DTL.UPDATED_USER AS updatedByUser,
+			TO_CHAR(DTL.SANKYU_REGIST_DT, 'DD-Mon') AS sankyuRegistDt,
+			TO_CHAR(DTL.SANKYU_ORDER_DT, 'DD-Mon') AS sankyuOrderDt,
+			TO_CHAR(DTL.SEA_REQUEST_DT, 'DD-Mon') AS seaRequestDt,
+			TO_CHAR(DTL.KDDI_ACCEPT_DT, 'DD-Mon') AS kddiAcceptDt,
+			TO_CHAR(DTL.KDDI_ORDER_DT, 'DD-Mon') AS kddiOrderDt,
+			TO_CHAR(DTL.KDDI_RECEIVE_DT, 'DD-Mon') AS kddiReceiveDt,
+			DTL.KDDI_DELIVER_QTY AS kddiDeliverQty,
+			TO_CHAR(DTL.KDDI_DELIVER_DT, 'DD-Mon') AS kddiDeliverDt,
+			TO_CHAR(DTL.KDDI_LEASE_DT, 'DD-Mon') AS kddiLeaseDt,
+			ORDERS.DELETE_FG AS deleteFg,
+			ORDERS.COUNTRY_CD AS countryCd,
+			DTL.ITEM_CD AS itemCd
+		FROM ORDER_DTL DTL
+			LEFT JOIN ORDERS ON DTL.ORDER_ID = ORDERS.ORDER_ID
+		WHERE DTL.ORDER_ID = #orderId#
+	</select>
+	
+	<!-- get orderCfg by orderId -->
+	<select id="getOrderCfgByOrderId" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean"
+		resultClass="jp.co.cyms.apps.fac001.bean.Pac0021Bean">
+		SELECT
+			CFG.ORDER_ID AS orderId,
+			ORDERS.DEPT_CD AS deptCd,
+			ORDERS.TTL_MRC AS ttlMrc,
+			ORDERS.TTL_OTC AS ttlOtc,
+			CFG.CATEGORY_CD AS categoryAbbrev,
+			CFG.ITEM_QTY AS quantity,
+			TO_CHAR(CFG.UPDATED_DT_LOCAL, 'DD-MON-YY') AS lastUpdated,
+			CFG.UPDATED_USER AS updatedByUser,
+			ORDERS.DELETE_FG AS deleteFg,
+			ORDERS.COUNTRY_CD AS countryCd,
+			CFG.ITEM_CD AS itemCd
+		FROM ORDER_CFG CFG
+			LEFT JOIN ORDERS ON CFG.ORDER_ID = ORDERS.ORDER_ID
+		WHERE CFG.ORDER_ID = #orderId#
+	</select>
+	
+	<!-- delete order in ORDERS-->
+	<!-- set DELETE_FG = '1' -->
+	<update id="deleteOrder" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDERS SET 
+			DELETE_FG = '1',
+			UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- authority = 3 -->
+	<!-- sankyu reject -->
+	<!-- set SANKYU_ORDER_DT = NULL -->
+	<update id="udpateSankyuOrderDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    SANKYU_ORDER_DT = NULL,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- sankyu approve -->
+	<!-- set SEA_REQUEST_DT = 'DD-MMM' -->
+	<update id="updateSeaRequestDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    SEA_REQUEST_DT = SYSDATE,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID =#orderId#
+	</update>
+	
+	<!-- update status in ORDER_STATUS-->
+	<insert id="updateOrderStatus"  parameterClass="jp.co.cyms.apps.fac001.bean.OrderStatusBean">
+		INSERT INTO ORDER_STATUS (
+			ORDER_ID,
+			DISPLAY_ORDER,
+			TIMESTAMP,
+			PHASE,
+		   	ACTION,
+		    UPDATED_USER,
+			UPDATED_DT_UTC,
+			UPDATED_DT_SERVER,
+			UPDATED_DT_LOCAL
+			) 
+			VALUES (
+				#orderId#,
+				(
+					CASE 
+					    WHEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD')) IS NOT NULL
+					    THEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD'))+1
+					    ELSE 1
+				    END
+				),
+				SYSDATE,
+				#phase#,
+				#action#,
+				#updatedUser#,
+				SYSDATE - #timeDifference#/24,
+				SYSDATE,
+				#updatedDtLocal#
+			)
+	</insert>
+	
+	<!-- Update stock inventory -->
+	<update id="updateStockInventory"  parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021Bean">
+		UPDATE STOCK SET
+		    QTY1 = CASE
+				        WHEN QTY1 IS NULL
+				        THEN #quantity#
+				        ELSE QTY1 + #quantity#
+				    END,
+<!-- 		    UPDATED_USER = #updatedUser#, -->
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE 
+		    ITEM_CD = #itemCd#
+		    AND COUNTRY_CD = #countryCd#
+	</update>
+	
+	<!-- check exist order status -->
+	<select id="checkExistOrderStatus" parameterClass="jp.co.cyms.apps.fac001.bean.OrderStatusBean" resultClass="java.lang.Integer">
+		SELECT COUNT(*) FROM ORDER_STATUS WHERE ORDER_ID = #orderId#
+	</select>
+	
+	<!-- check exist stock -->
+	<select id="checkExistStock" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021Bean" resultClass="java.lang.Integer">
+		SELECT COUNT(*) FROM STOCK WHERE ITEM_CD = #itemCd# AND COUNTRY_CD = #countryCd#
+	</select>
+	
+	<!-- authority = 2 -->
+	<!-- kddi approve -->
+	<!-- set KDDI_ACCEPT_DT = DD-MMM -->
+	<update id="udpateKddiAcceptDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_ACCEPT_DT = SYSDATE,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- kddi approve -->
+	<!-- set KDDI_ORDER_DT = DD-MMM -->
+	<update id="udpateKddiOrderDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_ORDER_DT = SYSDATE,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- kddi approve -->
+	<!-- set KDDI_RECEIVE_DT = DD-MMM -->
+	<update id="udpateKddiReceiveDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_RECEIVE_DT = SYSDATE,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- kddi approve -->
+	<!-- set KDDI_LEASE_DT = DD-MMM -->
+	<update id="udpateKddiLeaseDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_LEASE_DT = SYSDATE,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- kddi reject -->
+	<!-- Set [ORDER_DTL].KDDI_ACCEPT_DT = NULL -->
+	<update id="kddiRejectAcceptDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_ACCEPT_DT = NULL,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- Set [ORDER_DTL].KDDI_ORDER_DT = NULL -->
+	<update id="kddiRejectOrderDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_ORDER_DT = NULL,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- Set [ORDER_DTL].KDDI_RECEIVE_DT = NULL -->
+	<update id="kddiRejectReceiveDt" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL SET
+		    KDDI_RECEIVE_DT = NULL,
+		    UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_ID = #orderId#
+	</update>
+	
+	<!-- update config -->
+	<!-- redirect = 1 -->
+	<update id="updateRedirect" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE CONFIG SET 
+			REDIRECT = #redirect#,
+			UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+	</update>
+	
+	<!-- Get data to EmailBean -->
+	<select id="getDataSendEmail" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean" 
+		resultClass="jp.co.cyms.apps.fac001.bean.EmailBean">
+		SELECT 
+			(SELECT COUNTRY_CD FROM COUNTRY_MST 
+		        WHERE COUNTRY_CD = (SELECT COUNTRY_CD FROM COMPANY_MST WHERE COMPANY_CD = #companyCd#)) AS countryCd,
+			(SELECT COMPANY_CD FROM ORDERS 
+		        WHERE COMPANY_CD = #companyCd# AND ORDER_ID = #orderId#) AS companyCd,
+			(SELECT DEPT_CD FROM ORDERS 
+		        WHERE COMPANY_CD = #companyCd# AND ORDER_ID = #orderId#) AS deptCd,
+			(SELECT USER_NAME FROM USER_MST 
+		        WHERE USER_ID = (SELECT UPDATED_USER FROM ORDERS WHERE ORDER_ID = #orderId#)) AS userName,
+			(SELECT QUOTE_MRC FROM ORDERS 
+		        WHERE COMPANY_CD = #companyCd# AND ORDER_ID = #orderId#) AS quoteMrc,
+			(SELECT QUOTE_OTC FROM ORDERS 
+		        WHERE COMPANY_CD = #companyCd# AND ORDER_ID = #orderId#) AS quoteOtc
+		    FROM DUAL
+	</select>
+	
+	<!-- Get email_address -->
+	<select id="getToEmailAddress" resultClass="java.lang.String">
+		<!-- SELECT EMAIL_ADDRESS FROM USER_MST WHERE USER_AUTHORITY = '2' -->
+		SELECT
+		USER_MST.EMAIL_ADDRESS   AS userEmail	
+	FROM USER_MST
+	LEFT JOIN COMPANY_MST
+	ON USER_MST.COMPANY_CD = COMPANY_MST.COMPANY_CD
+	LEFT JOIN COUNTRY_MST
+	ON COUNTRY_MST.COUNTRY_CD = COMPANY_MST.COUNTRY_CD
+  	WHERE USER_MST.USER_AUTHORITY = '2'
+  	AND USER_MST.COMPANY_CD IN ( SELECT COMPANY_MST.COMPANY_CD from COMPANY_MST 
+  							   where COMPANY_MST.COUNTRY_CD = (select COMPANY_MST.COUNTRY_CD from COMPANY_MST where COMPANY_MST.COMPANY_CD = #userCompanyCd#)
+                               UNION
+    SELECT COMPANY_MST.COMPANY_CD from COMPANY_MST 
+  							   where COMPANY_MST.COUNTRY_CD = (select COMPANY_MST.COUNTRY_CD from COMPANY_MST where COMPANY_MST.COMPANY_CD = 'SG'))
+	</select>
+	
+	<!-- update order_dtl when click [Cancel] button -->
+	<update id="updateOrderDtlWhenCancel" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean">
+		UPDATE ORDER_DTL
+		SET 
+			KDDI_DELIVER_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+												AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			KDDI_DELIVER_QTY = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT COUNT(*)
+										    FROM ORDER_LEASE
+										    WHERE DELIVER_DT           IS NOT NULL
+											    AND ORDER_LEASE.ORDER_ID    = #orderId#
+											    AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			DELIVER_FG = ( CASE
+								WHEN ( SELECT COUNT(*)
+									   FROM ORDER_LEASE
+									   WHERE DELIVER_DT           IS NOT NULL
+										   AND ORDER_LEASE.ORDER_ID    = #orderId#
+										   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+									  ) = ORDER_DTL.ITEM_QTY
+								THEN '1'
+								ELSE NULL
+								END
+							),
+			UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_DTL.ORDER_ID    = #orderId#
+	</update>
+	
+	<!-- Get order by orderId -->
+	<select id="getOrders" resultClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		SELECT 
+		  ORDERS.ORDER_ID 			orderId,
+		  ORDERS.QUOTE_MRC 			quoteMrc,
+		  ORDERS.QUOTE_OTC 			quoteOtc,
+		  ORDERS.COUNTRY_CD 		countryCd,
+		  ORDERS.COMPANY_CD 		companyCd,
+		  ORDERS.DEPT_CD 			deptCd,
+		  ORDERS.TTL_MRC 			ttlMrc,
+		  ORDERS.TTL_OTC 			ttlOtc,
+		  ORDERS.TTL_AVG 			ttlAvg,
+		  ORDERS.TTL_MON 			ttlMon,
+		  ORDERS.REMARK   			remark,
+		  ORDERS.SAVE_FG 			saveFg,
+		  ORDERS.PRINT_FG 			printFg,
+		  ORDERS.SEND_ORDER_FG 		sendOrderFg,
+		  ORDERS.DELETE_FG 			deleteFg,
+		  ORDERS.BILL_FG 			billFg,
+		  ORDERS.BILL_MTH_START 	billMthStart,
+		  ORDERS.BILL_MTH_END 		billMthEnd,
+		  ORDERS.UPDATED_USER		updatedUser
+		FROM ORDERS
+        WHERE ORDERS.ORDER_ID = #orderId#
+	</select>
+	
+	<!-- Count DO in ORDER_DO table has DO_SIGNBACK_FG = 1 -->
+	<select id="countDoSignback" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0021ParamBean" resultClass="int">
+		SELECT COUNT(*) 
+			FROM ORDER_DO 
+			WHERE ORDER_ID = #orderId# 
+				AND DO_SIGNBACK_FG = '1'
+	</select>
+</sqlMap>

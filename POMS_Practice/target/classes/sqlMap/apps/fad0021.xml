@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAD0021">
+	<!-- get list stock -->
+	<select id="getListPad0021" resultClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		SELECT
+			STOCK.CATEGORY_CD as categoryCd,
+			CATEGORY_MST.CATEGORY_NAME as categoryName,
+			STOCK.ITEM_CD as itemCd,
+			ITEM_MST.ITEM_Name as itemName,
+			STOCK.COUNTRY_CD as countryCd,
+			STOCK.QTY1 as qty1,
+			STOCK.QTY1_LOI as qtyLoi1,
+			STOCK.QTY2 as qty2,
+			STOCK.QTY2_LOI as qtyLoi2,
+			STOCK.QTY3 as qty3,
+			STOCK.QTY3_LOI as qtyLoi3,
+			STOCK.QTY4 as qty4,
+			STOCK.QTY4_LOI as qtyLoi4,
+			STOCK.EXCLUSIVE_FG as exclusiveFg,
+			STOCK.UPDATED_USER as updatedUser,
+			balance
+		FROM STOCK 
+		LEFT JOIN CATEGORY_MST ON STOCK.CATEGORY_CD = CATEGORY_MST.CATEGORY_CD
+		LEFT JOIN ITEM_MST ON STOCK.ITEM_CD = ITEM_MST.ITEM_CD and STOCK.COUNTRY_CD = ITEM_MST.COUNTRY_CD
+		LEFT JOIN COUNTRY_MST ON COUNTRY_MST.COUNTRY_CD = STOCK.COUNTRY_CD
+		LEFT JOIN 
+	    (
+		    SELECT ORDER_DTL.ITEM_CD ITEMCD, ORDERS.COUNTRY_CD COUNTRYCD, SUM(NVL(ORDER_DTL.ITEM_QTY, 0) - NVL(ORDER_DTL.KDDI_DELIVER_QTY, 0)) BALANCE
+		    FROM ORDERS LEFT JOIN ORDER_DTL ON ORDER_DTL.ORDER_ID = ORDERS.ORDER_ID
+		    WHERE ORDERS.DELETE_FG IS NULL
+		    GROUP BY ORDER_DTL.ITEM_CD, ORDERS.COUNTRY_CD
+	    ) ORDERS_ORDERDTL ON ORDERS_ORDERDTL.COUNTRYCD = STOCK.COUNTRY_CD AND ORDERS_ORDERDTL.ITEMCD = STOCK.ITEM_CD
+		WHERE STOCK.DELETE_FG IS NULL
+			AND ITEM_MST.DELETE_FG IS NULL
+			AND ITEM_MST.NO_USE_FG IS NULL
+		ORDER BY CATEGORY_MST.DISPLAY_ORDER, STOCK.CATEGORY_CD, STOCK.ITEM_CD, COUNTRY_MST.DISPLAY_ORDER
+	</select>
+
+	<!-- get list item name (code) -->
+	<select id="getListItemNameCode" resultClass="jp.co.cyms.apps.fad001.bean.ItemBean">
+		SELECT
+			DISTINCT ITEM_MST.ITEM_CD itemCd,
+			ITEM_MST.ITEM_NAME as itemName,
+			ACTIVE_MST.CATEGORY_CD as categoryCd 
+		FROM ACTIVE_MST 
+			INNER JOIN ITEM_MST 
+			ON ACTIVE_MST.ITEM_CD = ITEM_MST.ITEM_CD
+		WHERE ITEM_MST.DELETE_FG IS NULL
+    		AND ITEM_MST.NO_USE_FG IS NULL
+	</select>
+	
+	<!-- Check exist record of table category -->
+	<select id="checkExistCategoryCd" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		CATEGORY_MST
+	WHERE
+		CATEGORY_MST.CATEGORY_CD = #categoryCdFromDb#
+	</select>
+	
+	<!-- Check exist record of table item -->
+	<select id="checkExistItemCd" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		ITEM_MST
+	WHERE
+		ITEM_MST.ITEM_CD = #itemCdFromDb#
+		<dynamic>
+			<isNotNull property="categoryCd" prepend="AND">
+				ITEM_MST.CATEGORY_CD = #categoryCdFromDb# 
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<!-- Check exist record of table country -->
+	<select id="checkExistCountryCd" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		COUNTRY_MST
+	WHERE
+		COUNTRY_MST.COUNTRY_CD = #countryCd#
+	</select>
+	
+	<!-- Get total record -->
+	<select id="checkExist" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		STOCK.ITEM_CD = #itemCdFromDb#
+		AND STOCK.COUNTRY_CD = #countryCd#
+	</select>
+	
+	<!-- Check when a user enters the screen, check [STOCK].EXCLUSIVE_FG and [STOCK].UPDATED_USER. -->
+	<select id="checkUserEnter" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		<dynamic>
+			<isNull property="exclusiveFg">
+				STOCK.EXCLUSIVE_FG IS NULL
+			</isNull>
+			<isNotNull property="exclusiveFg">
+				STOCK.EXCLUSIVE_FG = #exclusiveFg# 
+				AND STOCK.UPDATED_USER = #updatedUser#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<!-- Insert record -->
+	<insert id="doInsert" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+	INSERT INTO STOCK (
+		CATEGORY_CD
+		,ITEM_CD
+		,COUNTRY_CD
+		,QTY1
+		,QTY1_LOI
+		,QTY2
+		,QTY2_LOI
+		,QTY3
+		,QTY3_LOI
+		,QTY4
+		,QTY4_LOI
+		,UPDATED_USER
+		,UPDATED_DT_UTC
+		,UPDATED_DT_SERVER
+		,UPDATED_DT_LOCAL
+		,EXCLUSIVE_FG
+		) VALUES (
+		#categoryCd#
+		,#itemCd#
+		,#countryCd#
+		,#qty1#
+		,TO_DATE(#qtyLoi1#, 'YYYY-Mon-DD')
+		,#qty2#
+		,TO_DATE(#qtyLoi2#, 'YYYY-Mon-DD')
+		,#qty3#
+		,TO_DATE(#qtyLoi3#, 'YYYY-Mon-DD')
+		,#qty4#
+		,TO_DATE(#qtyLoi4#, 'YYYY-Mon-DD')
+		,#updatedUser#
+		,SYSDATE - #timeDifference#/24
+		,SYSDATE
+		,#updatedDtLocal#
+		,#exclusiveFg#
+		)
+    </insert>
+    
+	<!-- Update record -->
+    <update id="doUpdate" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET CATEGORY_CD = #categoryCd#
+			,ITEM_CD = #itemCd#
+			,QTY1 = #qty1#
+			,QTY1_LOI = TO_DATE(#qtyLoi1#, 'YYYY-Mon-DD')
+			,QTY2 = #qty2#
+			,QTY2_LOI = TO_DATE(#qtyLoi2#, 'YYYY-Mon-DD')
+			,QTY3 = #qty3#
+			,QTY3_LOI = TO_DATE(#qtyLoi3#, 'YYYY-Mon-DD')
+			,QTY4 = #qty4#
+			,QTY4_LOI = TO_DATE(#qtyLoi4#, 'YYYY-Mon-DD')
+			,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+			,EXCLUSIVE_FG = #exclusiveFg#
+		WHERE
+			ITEM_CD = #itemCdFromDb# 	AND 
+			COUNTRY_CD = #countryCd#
+   </update>
+   
+	<!-- Update each country with QTY1_#, UPDATED_USER and UPDATED_DT_* time -->
+    <update id="doUpdateCommonData" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET UPDATED_USER = #updatedUser#
+			,QTY1_LOI = TO_DATE(#qtyLoi1#, 'YYYY-Mon-DD')
+			,QTY2_LOI = TO_DATE(#qtyLoi2#, 'YYYY-Mon-DD')
+			,QTY3_LOI = TO_DATE(#qtyLoi3#, 'YYYY-Mon-DD')
+			,QTY4_LOI = TO_DATE(#qtyLoi4#, 'YYYY-Mon-DD')
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE STOCK.COUNTRY_CD = #countryCd#
+   </update>
+   
+   <!-- Update all countries with Category, Item_Cd-->
+    <update id="doUpdateCategoryItemCd" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET CATEGORY_CD = #categoryCd#
+			,ITEM_CD = #itemCd#
+		WHERE
+			ITEM_CD = #itemCdFromDb#
+   </update>
+   
+	<!-- Update Selected country -->
+    <update id="doUpdateCountryData" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET UPDATED_USER = #updatedUser#
+			,EXCLUSIVE_FG = #exclusiveFg#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+		<dynamic>
+			<isNotNull property="countryCd">
+				WHERE STOCK.COUNTRY_CD = #countryCd#
+			</isNotNull>
+		</dynamic>
+   </update>
+   
+   <!-- Update Unselected countries -->
+    <update id="doUpdateUnselectedCountryData" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET EXCLUSIVE_FG = #exclusiveFg#
+		WHERE 
+		UPDATED_USER = #updatedUser# AND STOCK.COUNTRY_CD != #countryCd#
+   </update>
+   
+	<!-- Update Country data for Add button-->
+    <update id="doUpdateCountryData2" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+		UPDATE STOCK
+		SET UPDATED_USER = #updatedUser#
+			,EXCLUSIVE_FG = #exclusiveFg#
+   </update>
+   
+   <!-- Check "country is ALREADY ENABLED by the same User"-->
+   <select id="checkAlready" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		STOCK.EXCLUSIVE_FG = '1' 
+		AND STOCK.UPDATED_USER = #updatedUser#
+		AND STOCK.COUNTRY_CD != #countryCd#
+   </select>
+   
+   <!-- Check locked data-->
+   <select id="checkLockedData" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		STOCK.EXCLUSIVE_FG = '1' 
+   </select>
+   <!-- Check locked data by another-->
+   <select id="checkLockedDataByAnother" parameterClass="java.lang.String" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		STOCK.EXCLUSIVE_FG = '1' AND STOCK.COUNTRY_CD != #countryCd#
+   </select>
+   
+   <!-- Get Country status -->
+	<select id="getCountryStatus" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+	SELECT 
+		COUNT(*)
+	FROM 
+		STOCK
+	WHERE
+		<dynamic>
+			<isNull property="exclusiveFg">
+				STOCK.EXCLUSIVE_FG IS NULL
+			</isNull>
+			<isNotNull property="exclusiveFg">
+				STOCK.EXCLUSIVE_FG = #exclusiveFg# 
+				AND STOCK.UPDATED_USER = #updatedUser#
+				AND STOCK.COUNTRY_CD = #countryCd#
+			</isNotNull>
+		</dynamic>
+	</select>
+   
+   	<!-- Delete record -->
+    <update id="doDelete" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+    DELETE FROM STOCK
+	WHERE
+	STOCK.ITEM_CD = #itemCd#
+	AND STOCK.COUNTRY_CD = #countryCd#
+   </update>
+      
+   	<!-- Close action -->
+    <update id="doClose" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean">
+    UPDATE STOCK
+    SET 
+    <dynamic>
+	    <isNull property="exclusiveFg">
+		    STOCK.EXCLUSIVE_FG = NULL
+		    ,STOCK.UPDATED_USER = NULL
+	    </isNull>
+	    <isNotNull property="exclusiveFg">
+		    STOCK.EXCLUSIVE_FG = #exclusiveFg# 
+		    ,STOCK.UPDATED_USER = #updatedUser#
+	    </isNotNull>
+    </dynamic>
+    </update>
+   
+   <!-- Count locked countries when init screen-->
+    <select id="countLockedInit" parameterClass="java.lang.String" resultClass="int">
+   	SELECT NVL(SUM(isLocked), 0) from (
+		SELECT COUNTRY_CD,
+    		CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS isLocked
+		FROM STOCK 
+		WHERE UPDATED_USER = #updatedUser# 
+  			AND EXCLUSIVE_FG = '1' GROUP BY COUNTRY_CD)
+   </select>
+   
+   <!-- Count locked countries when init screen-->
+   <select id="getLockedContries" parameterClass="java.lang.String" resultClass="jp.co.cyms.apps.fad001.bean.LockedCountryBean">
+ 	SELECT STOCK.COUNTRY_CD as countryCd
+ 		, USER_MST.USER_NAME as lockedUserName
+	FROM STOCK
+	INNER JOIN USER_MST ON USER_MST.USER_ID = STOCK.UPDATED_USER
+	WHERE 
+		STOCK.UPDATED_USER != #userId# 
+		AND STOCK.EXCLUSIVE_FG = '1'
+   </select>
+   
+   <!-- Count Category and ItemCd list-->
+   <select id="getCategoryItemCd" resultClass="jp.co.cyms.apps.fad001.bean.ItemBean">
+ 	SELECT CATEGORY_CD as categoryCd
+ 		, ITEM_CD as itemCd
+	FROM STOCK
+	GROUP BY CATEGORY_CD, ITEM_CD
+   </select>
+   
+   <!-- Get countryCd list-->
+   <select id="getCountries" resultClass="java.lang.String">
+	SELECT COUNTRY_CD AS countryCd
+	FROM COUNTRY_MST
+	</select>
+	
+	<!-- Count stock-->
+   <select id="checkExistStock" parameterClass="jp.co.cyms.apps.fad001.bean.Pad0021Bean" resultClass="int">
+ 	SELECT COUNT(*)
+	FROM STOCK
+	WHERE CATEGORY_CD = #categoryCd# 
+			AND ITEM_CD = #itemCd# 
+			AND COUNTRY_CD = #countryCd#
+   </select>
+   
+</sqlMap>

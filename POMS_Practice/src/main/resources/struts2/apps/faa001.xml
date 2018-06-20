@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="faa001" namespace="/faa001" extends="default">
+		<action name="saa0011" method="execute" class="jp.co.cyms.apps.faa001.action.Paa0011Action">
+			<result name="success">/jsp/faa001/saa0011.jsp</result>
+			<result name="input">/jsp/faa001/saa0011.jsp</result>
+			<result name="home" type="redirect">homeAction</result>
+		</action>
+		<action name="saa0011_01" method="login"
+			class="jp.co.cyms.apps.faa001.action.Paa0011Action">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0012</param>
+			</result>
+			<result name="error">/jsp/faa001/saa0011.jsp</result>
+			<result name="input">/jsp/faa001/saa0011.jsp</result>
+		</action>
+		<action name="saa0011_99" method="logout"
+			class="jp.co.cyms.apps.faa001.action.Paa0011Action">
+			<result name="success">/jsp/faa001/saa0011.jsp</result>
+		</action>
+		<action name="saa0012" method="execute" class="jp.co.cyms.apps.faa001.action.Paa0012Action">
+			<result name="success">/jsp/faa001/saa0012.jsp</result>
+			<result name="input">/jsp/faa001/saa0012.jsp</result>
+		</action>
+		<action name="saa0012_01" method="doEvent01" class="jp.co.cyms.apps.faa001.action.Paa0012Action">
+			<result name="success">/jsp/faa001/saa0012.jsp</result>
+			<result name="input">/jsp/faa001/saa0012.jsp</result>
+		</action>
+	</package>
+</struts>

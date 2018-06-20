@@ -1,0 +1,282 @@
+.quantity {
+	background-color: #E4DFEC !important;
+}
+
+.col-md-111 {
+	width: 12.5%;
+	display: inline;
+	border-right: solid black 1px;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-112 {
+	width: 12.5%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-1a {
+	width: 25%;
+	display: inline;
+	height: 100%;
+	padding-top: 8px;
+	float: left;
+}
+
+.col-md-1b {
+	width: 75%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-1b input {
+	width: 100%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-122 {
+	border-bottom: solid black 1px;
+	padding: 4px;
+}
+
+.col-md-44 {
+	width: 150px;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	text-align: right;
+}
+
+.col-md-45 {
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	text-align: left;
+}
+
+.item-name input {
+	width: 600px;
+}
+
+.item-code input {
+	width: 300px;
+}
+
+.table-td-white td {
+	background: #fff;
+}
+
+.margin-price {
+	padding-right: 10px;
+}
+
+.col-md-1 {
+	padding-left: 0px !important;
+}
+
+.bottom-right {
+	position: absolute;
+	top: 230px;
+	right: 20px;
+	font-size: 18px;
+	height: 80px;
+	width: auto;
+}
+
+.img-for-category {
+	height: 250px;
+	border: solid 2px #D9D9D9;
+	background-image: url('../../images/no-image-box.png');
+	background-size: auto 250px !important;
+	background-repeat: no-repeat;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.img-for-category-2 {
+	height: 250px;
+	/* background-image: url('../../images/laptop-order-example.jpg');
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover; */
+}
+
+.img-for-category-3 {
+	height: 250px;
+	/* background-image: url('../../images/laptop-low-order-example.png');
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover; */
+}
+
+.img-for-category-4 {
+	height: 250px;
+	/* background-image: url('../../images/mobile-order-example.jpg');
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover; */
+}
+
+.th-80 {
+	width: 80%;
+	display: inline;
+}
+
+.th-20 {
+	width: 20%;
+	display: inline;
+}
+
+.none-boder input, .none-boder select {
+	width: 100%;
+}
+
+.col-sm-2, .col-sm-10, .col-sm-12 {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.header-mrc {
+	color: white;
+	background-color: #2286d0;
+	padding-top: 5px;
+}
+
+.header-otc {
+	color: white;
+	background-color: #00aa55;
+	padding-top: 5px;
+}
+
+.line-01 {
+	border-bottom: solid 2px black;
+	padding: 10px;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.price-item {
+	color: red;
+	display: table-cell;
+	padding-top: 200px;
+	padding-left: 15px;
+	font-weight: bold;
+	font-size: 30px;
+}
+
+.line-02 {
+	border-top: solid 2px black;
+	padding: 10px;
+	margin-top: 2px;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.one-time-charge {
+	background-color: #C7DC9A !important;
+}
+
+.pdf-item-download {
+	cursor: pointer;
+}
+
+.data-table{
+	border: none !important;
+}
+
+.data-table td{
+	background-color: #fff;
+}
+
+.data-table th {
+    background-color: #00B0F0;
+    color: black !important;
+    text-align: center;
+}
+
+.data-table thead tr th{
+    border-top: 2px solid #7D7D7D;
+    border-bottom: 2px solid #7D7D7D;
+    border-left: 1px solid #7D7D7D;
+    border-right: 1px solid #7D7D7D;
+}
+
+.data-table thead tr th:first-child{
+    border-left: 2px solid #7D7D7D;
+}
+
+.data-table thead tr th:last-child{
+    border-right: 2px solid #7D7D7D;
+}
+
+.data-table tbody tr td {
+	border: 1px solid #7D7D7D !important;
+	padding-left: 5px;
+}
+
+.data-table tbody tr:first-child td {
+	border-top: none !important;
+}
+
+.data-table tbody tr:last-child td {
+	border-bottom: 2px solid #7D7D7D !important;
+}
+
+.data-table tbody tr td:first-child {
+	border-left: 2px solid #7D7D7D !important;
+}
+
+.data-table tbody tr td:last-child {
+	border-right: 2px solid #7D7D7D !important;
+}
+
+.no-padding-right{
+	padding-right: 0px !important;
+}
+
+.approve-text{
+	color: #2EE023 !important;
+}
+
+.font-bold{
+	font-weight: bold !important;
+}
+
+.color-black{
+	color: black !important;
+}
+
+.color-red{
+	color: red !important;
+}
+
+.color-green{
+	color: green !important;
+}
+
+.input-quotation{
+	color: black;
+    width: 500px !important;
+}
+
+.input-order-id{
+	width: 156px !important;
+}
+
+.order-id-label{
+	width: 110px !important;
+}

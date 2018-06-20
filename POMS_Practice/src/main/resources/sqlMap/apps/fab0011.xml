@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAB0011">
+	<!-- get all Item -->
+	<select id="getListItem" resultClass="jp.co.cyms.apps.fab001.bean.ItemBean">
+		SELECT CODE.ITEM_CD itemCd,
+		  CODE.ITEM_NAME 		itemName,
+		  CODE.CATEGORY_CD 		categoryCd,
+	 	  CODE.CATEGORY_NAME	categoryName,
+		  CODE.ITEM_BRAND 		itemBrand,
+		  CODE.WARNING_FG 		countryCd,
+		  CODE.NO_USE_FG 		noUseFg,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'SG'
+		  ) SG,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'MY'
+		  ) MY,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'TH'
+		  ) TH,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'ID'
+		  ) ID,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'VN'
+		  ) VN,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'IN'
+		  ) INDIA,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'SA'
+		  ) SA,
+		  (SELECT ITEM.UNIT_PRICE
+		  FROM ITEM_MST ITEM
+		  WHERE ITEM.ITEM_CD  = CODE.ITEM_CD
+		  AND ITEM.COUNTRY_CD = 'OM'
+		  ) OM
+		FROM
+		  (SELECT ITEM_CD,
+		    CATEGORY_CD,
+		    CATEGORY_NAME,
+		    ITEM_NAME,
+		    ITEM_BRAND,
+		    WARNING_FG,
+		    NO_USE_FG
+		  FROM ITEM_MST
+		  GROUP BY ITEM_CD,
+		    CATEGORY_CD,
+		    CATEGORY_NAME,
+		    ITEM_NAME,
+		    ITEM_BRAND,
+		    WARNING_FG,
+		    NO_USE_FG
+		  ) CODE
+	</select>
+	
+	<!-- get all Item -->
+	<select id="getAllItem" resultClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		SELECT 
+		  CATEGORY_CD as categoryCd,
+		  CATEGORY_NAME as categoryName,
+		  ITEM_CD as itemCd,
+		  ITEM_NAME as itemName,
+		  ITEM_BRAND as itemBrand,
+		  COUNTRY_CD as countryCd,
+		  UNIT_PRICE as unitPrice,
+		  WARNING_FG as warningFg,
+		  NO_USE_FG as noUseFg,
+		  DELETE_FG as deleteFg
+		FROM ITEM_MST
+		WHERE DELETE_FG IS NULL
+		ORDER BY LOWER(ITEM_CD), LOWER(CATEGORY_CD)
+	</select>
+	
+	<!-- get item -->
+	<select id="getItem" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean" resultClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		SELECT * FROM ITEM_MST WHERE ITEM_CD = #itemCd# AND COUNTRY_CD = #countryCd#
+	</select>
+	
+	<!-- update item -->
+	<update id="updateItem" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		UPDATE ITEM_MST SET
+		  	CATEGORY_CD = #categoryCd#
+		  	,CATEGORY_NAME = #categoryName#
+		  	,ITEM_NAME = #itemName#
+		  	<dynamic>
+		    	<isNotNull property="itemBrand">
+		      		,ITEM_BRAND = #itemBrand#
+		    	</isNotNull>
+		  	</dynamic>
+		  	,UNIT_PRICE = #unitPrice#
+		  	,WARNING_FG = #warningFg#
+		  	,NO_USE_FG = #noUseFg#
+		  	,UPDATED_USER = #updatedUser#
+			,UPDATED_DT_UTC = SYSDATE - #timeDifference#/24
+			,UPDATED_DT_SERVER = SYSDATE
+			,UPDATED_DT_LOCAL = #updatedDtLocal#
+			,EXCLUSIVE_FG = #exclusiveFg#
+		WHERE 
+			ITEM_CD = #itemCd#
+		    AND COUNTRY_CD = #countryCd#
+	</update>
+	
+	<!-- update stock -->
+	<update id="updateStock" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		UPDATE STOCK SET
+			CATEGORY_CD = #categoryCd#,
+<!-- 			UPDATED_USER = #updatedUser#, -->
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE 
+		    ITEM_CD = #itemCd#
+		    AND COUNTRY_CD = #countryCd#
+	</update>
+	
+	<!-- insert item -->
+	<insert id="insertItem" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		INSERT INTO ITEM_MST (
+		    CATEGORY_CD
+		    ,CATEGORY_NAME
+		    ,ITEM_CD
+		    ,ITEM_NAME
+		    <dynamic>
+		    	<isNotNull property="itemBrand">
+		      		,ITEM_BRAND
+		    	</isNotNull>
+		  	</dynamic>
+		    ,COUNTRY_CD
+		    ,UNIT_PRICE
+		    <dynamic>
+		    	<isNotNull property="warningFg">
+		      		,WARNING_FG
+		    	</isNotNull>
+		  	</dynamic>
+		    ,UPDATED_USER
+			,UPDATED_DT_UTC
+			,UPDATED_DT_SERVER
+			,UPDATED_DT_LOCAL
+			,EXCLUSIVE_FG
+		  ) 
+		  VALUES (
+		    #categoryCd#
+		    ,#categoryName#
+		    ,#itemCd#
+		    ,#itemName#
+		    <dynamic>
+		    	<isNotNull property="itemBrand">
+		      		,#itemBrand#
+		    	</isNotNull>
+		  	</dynamic>
+		    ,#countryCd#
+		    ,#unitPrice#
+		    <dynamic>
+		    	<isNotNull property="warningFg">
+		      		,#warningFg#
+		    	</isNotNull>
+		  	</dynamic>
+		    ,#updatedUser#
+			,SYSDATE - #timeDifference#/24
+			,SYSDATE
+			,#updatedDtLocal#
+			,#exclusiveFg#
+		  )
+	</insert>
+	
+	<!-- insert stock -->
+	<insert id="insertStock" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		INSERT INTO STOCK (
+		    CATEGORY_CD
+		    ,ITEM_CD
+		    ,COUNTRY_CD
+		    ,UPDATED_USER
+			,UPDATED_DT_UTC
+			,UPDATED_DT_SERVER
+			,UPDATED_DT_LOCAL
+			,EXCLUSIVE_FG
+		  ) 
+		  VALUES (
+		    #categoryCd#
+		    ,#itemCd#
+		    ,#countryCd#
+		    ,#updatedUser#
+			,SYSDATE - #timeDifference#/24
+			,SYSDATE
+			,#updatedDtLocal#
+			,#exclusiveFg#
+		  )
+	</insert>
+	
+	<!-- delete item -->
+	<update id="deleteItem" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		UPDATE ITEM_MST SET 
+			DELETE_FG = '1',
+			UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+		WHERE ITEM_CD = #itemCd#
+	</update>
+	
+	<!-- get stock -->
+	<select id="getStock" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean" resultClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		SELECT * FROM STOCK WHERE ITEM_CD = #itemCd# AND COUNTRY_CD = #countryCd#
+	</select>
+	
+	<!-- update active_mst when delete item -->
+	<update id="updateActiveMst" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		UPDATE ACTIVE_MST SET
+          	ACTIVE_FG = '0',
+          	UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+        WHERE 
+          	ITEM_CD = #itemCd#
+	</update>
+	
+	<!-- check exist item in actice_mst -->
+	<select id="checkExistItemActiveMst"  parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean" resultClass="int">
+		SELECT COUNT(*) FROM ACTIVE_MST WHERE ITEM_CD = #itemCd#
+	</select>
+	
+	<!-- delete item in STOCK -->
+	<update id="deleteStockItem" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0011Bean">
+		DELETE FROM STOCK WHERE STOCK.ITEM_CD = #itemCd#
+	</update>
+</sqlMap>

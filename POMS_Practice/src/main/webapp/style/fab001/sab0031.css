@@ -1,0 +1,301 @@
+.col-md-111 {
+	width: 12.5%;
+	display: inline;
+	border-right: solid black 1px;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-112 {
+	width: 12.5%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-1a {
+	width: 25%;
+	display: inline;
+	height: 100%;
+	padding-top: 8px;
+	float: left;
+}
+
+.col-md-1b {
+	width: 75%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-1b input {
+	width: 100%;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	float: left;
+}
+
+.col-md-12 {
+	padding-right: 0px;
+	padding-left: 0px;
+}
+
+.col-md-122 {
+	border-bottom: solid black 1px;
+	padding: 4px;
+}
+
+.col-md-44 {
+	width: 150px;
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	text-align: right;
+}
+
+.col-md-45 {
+	display: inline;
+	height: 100%;
+	padding: 4px;
+	text-align: left;
+}
+
+.item-name input {
+	width: 600px;
+}
+
+.item-code input {
+	width: 300px;
+}
+
+.table-td-white td {
+	background: #fff;
+}
+
+.margin-price {
+	padding-right: 10px;
+}
+
+.col-md-1-button {
+	padding-left: 3px;
+	display: inline-block !important;
+}
+
+.text-left-button {
+	float: left !important;
+}
+
+.col-md-1 {
+	padding-left: 0px !important;
+}
+
+.images-icon-left {
+	background-image: url("../../images/icon-arrow-left.png");
+}
+
+.images-icon-right {
+	background-image: url("../../images/icon-arrow-right.png");
+}
+
+.images-icon-left, .images-icon-right {
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	display: inline-block;
+	text-align: center;
+}
+
+.images-icon-left {
+	width: 40px;
+	height: 40px;
+}
+
+.images-icon-right {
+	width: 35px;
+	height: 35px;
+}
+
+.col-md-1x {
+	width: 2%;
+	display: inline;
+	height: 100%;
+	padding-top: 8px;
+	float: left;
+	margin-left: 10px;
+}
+
+div.dataTables_scroll {
+	//min-height: 500px;
+}
+
+.row-checked {
+	background-color: orange !important;
+}
+
+.row-eq-height {
+    display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	margin-right: 0px !important;
+	padding: 0px 80px;
+}
+
+.btn-action {
+	text-align: center;
+}
+
+.vertical-align-middle {
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: -5px;
+}
+
+.vertical-align-middle-hidden {
+	height: 100%;
+	width: 0;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.border-div{
+	border: 1px solid #7A7A7A;
+}
+
+.div-active-item{
+    //margin-left: -20px !important;
+    //margin-right: -40px !important;
+    /* border: 1px solid #7A7A7A; */
+}
+
+.div-all-item{
+    //margin-left: -30px !important;
+    //margin-right: -30px !important;
+    /* border: 1px solid #7A7A7A; */
+}
+
+.div-inactive-item{
+    //margin-left: -40px !important;
+    //margin-right: -20px !important;
+    /* border: 1px solid #7A7A7A; */
+}
+
+#div-action-left-all-item{
+    //padding-left: 25px !important;
+    width: 5%;
+}
+
+#div-action-right-all-item{
+    //padding-right: 25px !important;
+    width: 5%;
+}
+
+.btn-t-u{
+	border: none;
+    background-color: transparent;
+    font-size: 30px;
+    height: 40px;
+}
+
+.btn-t-u:first-child{
+	margin-bottom: 20px;
+}
+
+.btn-t-u:last-child{
+    margin-top: 20px;
+}
+
+.icon-flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+.width-10{
+	width: 10% !important;
+}
+
+.width-90{
+    width: 90% !important;
+}
+
+.header-label{
+	width: 100%;
+    font-size: 1em;
+    padding: 10px 0px 0px 10px;
+    font-family: Tahoma , Helvetica, Arial, sans-serif;
+}
+
+div.dataTables_scrollHead{
+	display: none;
+}
+
+.data-table{
+	border: none;
+}
+
+.data-table tbody tr td{
+	border-right: 1px solid #7A7A7A;
+	border-bottom: 1px solid #7A7A7A;
+}
+
+.data-table tbody tr td:nth-child(2){
+	border-right: none;
+	border-bottom: 1px solid #7A7A7A;
+}
+
+.data-table tbody tr td:last-child{
+	border-right: none;
+	border-bottom: 1px solid #7A7A7A;
+}
+
+#div-body-active{
+	width: 30%;
+}
+
+#div-body-all{
+	width: 30%;
+}
+
+#div-body-inactive{
+	width: 30%;
+}
+
+td {
+    background: white;
+}
+
+.hidden-column{
+	display: none;
+}
+
+.border-error{
+	border-color: red;
+}
+
+#tr-error{
+	display: none;
+	margin-top: -4px !important;
+	height: 20px !important;
+}
+
+#td-error-country, #td-error-category{
+	padding-top: 0px !important;
+	border: none !important;
+}
+
+#modalConfirmPending{
+	margin-top: 200px;
+}
+
+.btn-t-u:hover{
+	outline: thin dotted;
+	outline: 5px auto -webkit-focus-ring-color;
+	outline-offset: -2px;
+}

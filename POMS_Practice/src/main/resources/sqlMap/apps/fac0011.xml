@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC0011">
+	<!-- get all companies -->
+	<select id="getAllCompanies" resultClass="jp.co.cyms.apps.fac001.bean.CompanyBean">
+		SELECT COMPANY_CD 	companyCd,
+			COMPANY_NAME 		companyName,
+			COUNTRY.COUNTRY_CD 	countryCd,
+			ATTN_TO_NAME		attnToName,
+			CC_NAME				ccName
+		FROM COMPANY_MST
+			LEFT JOIN COUNTRY_MST COUNTRY
+				ON COMPANY_MST.COUNTRY_CD = COUNTRY.COUNTRY_CD
+		ORDER BY COUNTRY.DISPLAY_ORDER
+	</select>
+	<!-- get all departments -->
+	<select id="getAllDepartments" resultClass="jp.co.cyms.apps.fac001.bean.DepartmentBean">
+		SELECT DEPT_CD
+		deptCd,
+		DEPT_NAME deptName,
+		COMPANY_CD companyCd
+		FROM
+		DEPT_MST
+	</select>
+
+	<!-- get addon -->
+	<select id="getAddon" resultClass="jp.co.cyms.apps.fac001.bean.AddonBean">
+		SELECT ADDON_CD addonCd,
+		ADDON_NAME 		addonName,
+		ADDON_TYPE 		addonType,
+		DISPLAY_ORDER 	displayOrder,
+		CONFIG,
+		SECTION_NAME 	sectionName
+		FROM ADDON_MST
+		ORDER BY DISPLAY_ORDER
+		ASC
+	</select>
+
+	<!-- get all Items -->
+	<select id="getAllItems" resultClass="jp.co.cyms.apps.fac001.bean.ItemBean">
+		SELECT ITEM.ITEM_CD 	itemCd,
+		  ITEM.ITEM_NAME 		itemName,
+		  ITEM.CATEGORY_CD 		categoryCd,
+		  ITEM.ITEM_BRAND 		itemBrand,
+		  ITEM.UNIT_PRICE 		unitPrice,
+		  ITEM.COUNTRY_CD 		countryCd,
+		  ITEM.WARNING_FG 		warningFg,
+		  ITEMDTL.IMAGE_NAME 	imgName,
+		  ITEMDTL.PDF_NAME 		pdfName,
+		  ADDON.ADDON_CD 		addonCd,
+		  ADDON.ADDON_TYPE 		leaseType,
+		  ADDON.CONFIG 			addonConfig,
+		  STOCK.QTY1            qtyInStock,
+		    (
+		  CASE
+		    WHEN STOCK.ITEM_CD IS NULL
+		    THEN 'false'
+		    ELSE 'true'
+		  END ) existInStock
+		FROM ACTIVE_MST ACTIVE
+		JOIN ITEM_MST ITEM
+		ON ACTIVE.COUNTRY_CD = ITEM.COUNTRY_CD
+		AND ACTIVE.ITEM_CD   = ITEM.ITEM_CD
+		LEFT JOIN ITEM_DTL_MST ITEMDTL
+		ON ITEMDTL.CATEGORY_CD = ACTIVE.CATEGORY_CD
+		AND ITEMDTL.ITEM_CD    = ACTIVE.ITEM_CD
+		LEFT JOIN ADDON_MST ADDON
+		ON ACTIVE.CATEGORY_CD  = ADDON.ADDON_CD
+		LEFT JOIN STOCK ON ITEM.ITEM_CD = STOCK.ITEM_CD
+    	AND ITEM.COUNTRY_CD = STOCK.COUNTRY_CD
+		WHERE ACTIVE.ACTIVE_FG = '1' 
+	</select>
+	
+	<!-- get hidden Items -->
+	<select id="getHiddenItems" resultClass="jp.co.cyms.apps.fac001.bean.ItemBean">
+		SELECT ITEM.ITEM_CD	 itemCd,
+		  ITEM.ITEM_NAME	 itemName,
+		  ITEM.CATEGORY_CD 	 categoryCd,
+		  ITEM.ITEM_BRAND	 itemBrand,
+		  ITEM.UNIT_PRICE	 unitPrice,
+		  ITEM.COUNTRY_CD	 countryCd,
+		  ITEM.WARNING_FG	 warningFg,
+		  ITEMDTL.IMAGE_NAME imgName,
+		  ADDON.ADDON_CD	 addonCd,
+		  ADDON.ADDON_TYPE	 leaseType,
+		  ADDON.CONFIG		 addonConfig
+		FROM ITEM_MST ITEM
+		LEFT JOIN ITEM_DTL_MST ITEMDTL
+		ON ITEMDTL.CATEGORY_CD = ITEM.CATEGORY_CD
+		AND ITEMDTL.ITEM_CD    = ITEM.ITEM_CD
+		LEFT JOIN ADDON_MST ADDON
+		ON ITEM.CATEGORY_CD  = ADDON.ADDON_CD
+		WHERE ITEM.NO_USE_FG IS NULL
+		AND ITEM.DELETE_FG IS NULL
+		AND ITEM.CATEGORY_CD IN ('ANTIVIRUS', 'MONITORING')
+	</select>
+
+	<!-- get newest order -->
+	<select id="getNewestOrder" resultClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		SELECT ORDER_ID orderId
+		FROM ORDERS
+	</select>
+
+	<insert id="insertOrder" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		INSERT
+		INTO ORDERS
+		(
+		ORDER_ID ,
+		QUOTE_MRC ,
+		QUOTE_OTC ,
+		COUNTRY_CD ,
+		COMPANY_CD ,
+		DEPT_CD ,
+		TTL_MRC ,
+		TTL_OTC ,
+		TTL_AVG ,
+		TTL_MON ,
+		REMARK ,
+		SAVE_FG ,
+		UPDATED_USER,
+		UPDATED_DT_UTC ,
+		UPDATED_DT_SERVER ,
+		UPDATED_DT_LOCAL ,
+		EXCLUSIVE_FG
+		)
+		VALUES
+		(
+		#orderId# ,
+		#quoteMrc# ,
+		#quoteOtc# ,
+		#countryCd# ,
+		#companyCd# ,
+		#deptCd# ,
+		#ttlMrc# ,
+		#ttlOtc# ,
+		#ttlAvg# ,
+		#ttlMon# ,
+		#remark# ,
+		#saveFg# ,
+		#updatedUser#,
+		SYSDATE - #timeDifference#/24 ,
+		SYSDATE ,
+		#updatedDtLocal# ,
+		#exclusiveFg# )
+	</insert>
+
+	<insert id="insertOrderDtl" parameterClass="jp.co.cyms.apps.fac001.bean.OrderDtlBean">
+		INSERT
+		INTO ORDER_DTL
+		(
+		ORDER_ID ,
+		CATEGORY_CD ,
+		ITEM_CD ,
+		ITEM_QTY ,
+		UNIT_PRICE ,
+		AMOUNT ,
+		LEASE_TYPE ,
+		SANKYU_REGIST_DT ,
+		UPDATED_USER,
+		UPDATED_DT_UTC ,
+		UPDATED_DT_SERVER ,
+		UPDATED_DT_LOCAL ,
+		EXCLUSIVE_FG
+		)
+		VALUES
+		(
+		#orderId# ,
+		#categoryCd# ,
+		#itemCd# ,
+		#itemQty# ,
+		#unitPrice# ,
+		#amount# ,
+		#leaseType# ,
+		SYSDATE ,
+		#updatedUser#,
+		SYSDATE -
+		#timeDifference#/24 ,
+		SYSDATE ,
+		#updatedDtLocal# ,
+		#exclusiveFg# )
+	</insert>
+
+	<insert id="insertOrderCfg" parameterClass="jp.co.cyms.apps.fac001.bean.OrderCfgBean">
+		INSERT
+		INTO ORDER_CFG
+		(
+		ORDER_ID ,
+		CATEGORY_CD ,
+		ADDON_CD ,
+		ADDON_CONFIG ,
+		ITEM_CD ,
+		ITEM_QTY ,
+		UNIT_PRICE ,
+		AMOUNT ,
+		LEASE_TYPE ,
+		WARNING_FG ,
+		UPDATED_USER,
+		UPDATED_DT_UTC ,
+		UPDATED_DT_SERVER ,
+		UPDATED_DT_LOCAL ,
+		EXCLUSIVE_FG
+		)
+		VALUES
+		(
+		#orderId# ,
+		#categoryCd# ,
+		#addonCd# ,
+		#addonConfig# ,
+		#itemCd# ,
+		#itemQty# ,
+		#unitPrice# ,
+		#amount# ,
+		#leaseType# ,
+		#warningFg# ,
+		#updatedUser#,
+		SYSDATE -
+		#timeDifference#/24 ,
+		SYSDATE ,
+		#updatedDtLocal# ,
+		#exclusiveFg# )
+	</insert>
+
+	<insert id="insertOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.OrderLeaseBean">
+		INSERT
+		INTO
+		ORDER_LEASE
+		(
+		ORDER_ID ,
+		QUOTE_MRC ,
+		QUOTE_OTC ,
+		CATEGORY_CD ,
+		ITEM_CD ,
+		DISPLAY_ORDER ,
+		LEASE_TYPE ,
+		UPDATED_USER,
+		UPDATED_DT_UTC ,
+		UPDATED_DT_SERVER ,
+		UPDATED_DT_LOCAL ,
+		EXCLUSIVE_FG
+		)
+		VALUES
+		(
+		#orderId# ,
+		#quoteMrc# ,
+		#quoteOtc# ,
+		#categoryCd# ,
+		#itemCd# ,
+		#displayOrder# ,
+		#leaseType# ,
+		#updatedUser#,
+		SYSDATE -
+		#timeDifference#/24 ,
+		SYSDATE ,
+		#updatedDtLocal# ,
+		#exclusiveFg# )
+	</insert>
+
+	<insert id="insertOrderStatus" parameterClass="jp.co.cyms.apps.fac001.bean.OrderStatusBean">
+		INSERT
+		INTO
+		ORDER_STATUS
+		(
+		ORDER_ID ,
+		TIMESTAMP ,
+		PHASE ,
+		DISPLAY_ORDER,
+		UPDATED_USER,
+		UPDATED_DT_UTC ,
+		UPDATED_DT_SERVER ,
+		UPDATED_DT_LOCAL ,
+		EXCLUSIVE_FG
+		)
+		VALUES
+		(
+		#orderId# ,
+		SYSDATE ,
+		#phase# ,
+		(
+			CASE 
+			    WHEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD')) IS NOT NULL
+			    THEN (SELECT MAX(DISPLAY_ORDER) FROM ORDER_STATUS WHERE ORDER_ID = #orderId# AND TO_DATE(TIMESTAMP, 'YYYY-MM-DD') = TO_DATE(SYSDATE, 'YYYY-MM-DD'))+1
+			    ELSE 1
+		    END
+		),
+		#updatedUser#,
+		SYSDATE - #timeDifference#/24 ,
+		SYSDATE ,
+		#updatedDtLocal# ,
+		#exclusiveFg# )
+	</insert>
+	
+	<!-- get order -->
+	<select id="getOrder" resultClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		SELECT 
+		  ORDERS.ORDER_ID 			orderId,
+		  ORDERS.QUOTE_MRC 			quoteMrc,
+		  ORDERS.QUOTE_OTC 			quoteOtc,
+		  ORDERS.COUNTRY_CD 		countryCd,
+		  ORDERS.COMPANY_CD 		companyCd,
+		  ORDERS.DEPT_CD 			deptCd,
+		  ORDERS.TTL_MRC 			ttlMrc,
+		  ORDERS.TTL_OTC 			ttlOtc,
+		  ORDERS.TTL_AVG 			ttlAvg,
+		  ORDERS.TTL_MON 			ttlMon,
+		  ORDERS.REMARK   			remark,
+		  ORDERS.SAVE_FG 			saveFg,
+		  ORDERS.PRINT_FG 			printFg,
+		  ORDERS.SEND_ORDER_FG 		sendOrderFg,
+		  ORDERS.DELETE_FG 			deleteFg,
+		  ORDERS.BILL_FG 			billFg,
+		  ORDERS.BILL_MTH_START 	billMthStart,
+		  ORDERS.BILL_MTH_END 		billMthEnd,
+		  ORDERS.UPDATED_USER		updatedUser,
+		  COMPANY_MST.COMPANY_NAME  companyName,
+		  COMPANY_MST.ATTN_TO_NAME  attnToName,
+		  COMPANY_MST.CC_NAME 		ccName,
+		  DEPT_MST.DEPT_NAME 		deptName
+		FROM ORDERS
+		LEFT JOIN COMPANY_MST
+		ON ORDERS.COMPANY_CD = COMPANY_MST.COMPANY_CD
+		LEFT JOIN DEPT_MST
+		ON DEPT_MST.COMPANY_CD =ORDERS.COMPANY_CD
+		AND DEPT_MST.DEPT_CD   = ORDERS.DEPT_CD
+		WHERE ORDERS.ORDER_ID = #orderId#
+	</select>
+	
+	<!-- get orderDtl -->
+	<select id="getOrderDtl" resultClass="jp.co.cyms.apps.fac001.bean.OrderDtlBean">
+		SELECT ORDER_DTL.ORDER_ID	 orderId,
+		  ORDER_DTL.CATEGORY_CD		 categoryCd,
+		  ORDER_DTL.ITEM_CD			 itemCd,
+		  ORDER_DTL.ITEM_QTY		 itemQty,
+		  ORDER_DTL.UNIT_PRICE		 unitPrice,
+		  ORDER_DTL.AMOUNT 			 amount,
+		  ORDER_DTL.LEASE_TYPE 		 leaseType,
+		  TO_CHAR(ORDER_DTL.KDDI_RECEIVE_DT, 'DD-Mon-YYYY HH24:MI:SS')	 kddiReceiveDt,
+		  NVL(ORDER_DTL.KDDI_DELIVER_QTY, 0) kddiDeliverQty,
+		  NVL(ITEM_MST.ITEM_NAME, '')		 itemName,
+	  	  NVL(ITEM_MST.ITEM_BRAND, '')		 itemBrand,
+		  NVL(ITEM_DTL_MST.REMARK, '')		 itemRemark,
+		  NVL(CATEGORY_MST.SECTION_NAME, '')	 sectionName,
+		  ORDERS.COUNTRY_CD 				countryCd
+		FROM ORDER_DTL
+		LEFT JOIN ORDERS
+		ON ORDERS.ORDER_ID = ORDER_DTL.ORDER_ID
+		LEFT JOIN ITEM_MST
+		ON ITEM_MST.ITEM_CD = ORDER_DTL.ITEM_CD
+		AND ORDERS.COUNTRY_CD = ITEM_MST.COUNTRY_CD
+		LEFT JOIN CATEGORY_MST
+		ON CATEGORY_MST.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+		AND CATEGORY_MST.CATEGORY_TYPE = ORDER_DTL.LEASE_TYPE
+		LEFT JOIN ITEM_DTL_MST
+		ON ITEM_DTL_MST.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+		AND ITEM_DTL_MST.ITEM_CD = ORDER_DTL.ITEM_CD
+		WHERE ORDER_DTL.ORDER_ID = #orderId#
+		<dynamic>
+			<isNotNull property="leaseType">
+				AND ORDER_DTL.LEASE_TYPE = #leaseType#
+			</isNotNull>
+		</dynamic>
+		ORDER BY CATEGORY_MST.DISPLAY_ORDER
+	</select>
+	<!-- get orderCfg -->
+	<select id="getOrderCfg" resultClass="jp.co.cyms.apps.fac001.bean.OrderCfgBean">
+		 SELECT ORDER_CFG.ORDER_ID 	orderId,
+		 	  <dynamic>
+		 			<isNotNull property="leaseType">
+		 				<isEqual property="leaseType" compareValue="MRC">
+			  			ORDER_CFG.CATEGORY_CD 	categoryCd,
+			  			ORDER_CFG.ITEM_QTY 		itemQty,
+			  			</isEqual>
+			  			<isNotEqual property="leaseType" compareValue="MRC">
+			  			'' 	categoryCd,
+			  			SUM(ORDER_CFG.ITEM_QTY) 		itemQty,
+			  			</isNotEqual>
+			  		</isNotNull>
+			  		<isNull property="leaseType">
+			  			ORDER_CFG.CATEGORY_CD 	categoryCd,
+			  			ORDER_CFG.ITEM_QTY 		itemQty,
+			  		</isNull>
+			  </dynamic>
+			  ORDER_CFG.ADDON_CD 		addonCd,
+			  ORDER_CFG.ADDON_CONFIG 	addonConfig,
+			  ORDER_CFG.ITEM_CD 		itemCd,
+			  <!-- ORDER_CFG.ITEM_QTY 		itemQty, -->
+			  ORDER_CFG.UNIT_PRICE 		unitPrice,
+			  <!-- ORDER_CFG.AMOUNT 			amount, -->
+			  <dynamic>
+                    <isNotNull property="leaseType">
+                        <isEqual property="leaseType" compareValue="OTC">
+                            SUM(ORDER_CFG.AMOUNT)  amount,
+                        </isEqual>
+                        <isNotEqual property="leaseType" compareValue="OTC">
+                        	ORDER_CFG.AMOUNT  amount,
+                        </isNotEqual>
+                   </isNotNull>
+                   <isNull property="leaseType">
+                   		ORDER_CFG.AMOUNT  amount,
+                   </isNull>
+              </dynamic>
+			  ORDER_CFG.LEASE_TYPE 		leaseType,
+			  NVL(ORDER_CFG.WARNING_FG, '') 		warningFg,
+			  NVL(ITEM_MST.ITEM_NAME, '') 		itemName,
+			  NVL(ITEM_MST.ITEM_BRAND, '')		 itemBrand,
+			  NVL(ITEM_DTL_MST.REMARK, '')	itemRemark,
+			  NVL(CATEGORY_MST.SECTION_NAME, '') 	sectionName,
+			  ADDON_MST.DISPLAY_ORDER AS addonDisplayOrder,
+			  CATEGORY_MST.DISPLAY_ORDER categoryDisplayOrder
+			FROM ORDER_CFG
+			LEFT JOIN ORDERS
+			ON ORDERS.ORDER_ID = ORDER_CFG.ORDER_ID
+			LEFT JOIN ITEM_MST
+			ON ITEM_MST.ITEM_CD   = ORDER_CFG.ITEM_CD
+			AND ORDERS.COUNTRY_CD = ITEM_MST.COUNTRY_CD
+			LEFT JOIN ADDON_MST
+			ON ADDON_MST.ADDON_CD    = ORDER_CFG.ADDON_CD
+			AND ADDON_MST.ADDON_TYPE = ORDER_CFG.LEASE_TYPE
+		    LEFT JOIN CATEGORY_MST
+		    ON ADDON_MST.ADDON_CD    = CATEGORY_MST.CATEGORY_CD
+			LEFT JOIN ITEM_DTL_MST
+			ON ITEM_DTL_MST.ITEM_CD = ORDER_CFG.ITEM_CD
+		WHERE ORDER_CFG.ORDER_ID = #orderId#
+		<!-- SELECT ORDER_CFG.ORDER_ID 	orderId,
+
+			  ORDER_CFG.ADDON_CD 		addonCd,
+			  ORDER_CFG.ADDON_CONFIG 	addonConfig,
+			  ORDER_CFG.ITEM_CD 		itemCd,
+			  sum(ORDER_CFG.ITEM_QTY) 		itemQty,
+			  ORDER_CFG.UNIT_PRICE 		unitPrice,
+			  ORDER_CFG.AMOUNT 			amount,
+			  ORDER_CFG.LEASE_TYPE 		leaseType,
+			  NVL(ORDER_CFG.WARNING_FG, '') 		warningFg,
+			  NVL(ITEM_MST.ITEM_NAME, '') 		itemName,
+			  NVL(ITEM_MST.ITEM_BRAND, '')		 itemBrand,
+			  NVL(ITEM_DTL_MST.REMARK, '')	itemRemark,
+			  NVL(CATEGORY_MST.SECTION_NAME, '') 	sectionName,
+			  ADDON_MST.DISPLAY_ORDER AS addonDisplayOrder,
+			  CATEGORY_MST.DISPLAY_ORDER categoryDisplayOrder
+			FROM ORDER_CFG
+			LEFT JOIN ORDERS
+			ON ORDERS.ORDER_ID = ORDER_CFG.ORDER_ID
+			LEFT JOIN ITEM_MST
+			ON ITEM_MST.ITEM_CD   = ORDER_CFG.ITEM_CD
+			AND ORDERS.COUNTRY_CD = ITEM_MST.COUNTRY_CD
+			LEFT JOIN ADDON_MST
+			ON ADDON_MST.ADDON_CD    = ORDER_CFG.ADDON_CD
+			AND ADDON_MST.ADDON_TYPE = ORDER_CFG.LEASE_TYPE
+		    LEFT JOIN CATEGORY_MST
+		    ON ADDON_MST.ADDON_CD    = CATEGORY_MST.CATEGORY_CD
+			LEFT JOIN ITEM_DTL_MST
+			ON ITEM_DTL_MST.ITEM_CD = ORDER_CFG.ITEM_CD
+		WHERE ORDER_CFG.ORDER_ID = #orderId# -->
+		<dynamic>
+			<isNotNull property="leaseType">
+				AND ORDER_CFG.LEASE_TYPE = #leaseType#
+			</isNotNull>
+		</dynamic>
+			  <dynamic>
+		 			<isNotNull property="leaseType">
+		 				<isEqual property="leaseType" compareValue="OTC">
+		group by ORDER_CFG.ORDER_ID,
+			  ORDER_CFG.ADDON_CD,
+			  ORDER_CFG.ADDON_CONFIG,
+             ORDER_CFG.ITEM_CD,
+			  <!-- ORDER_CFG.ITEM_QTY, -->
+			  ORDER_CFG.UNIT_PRICE,
+			  <!-- ORDER_CFG.AMOUNT, -->
+			  ORDER_CFG.LEASE_TYPE,
+			  ORDER_CFG.WARNING_FG,
+			  ITEM_MST.ITEM_NAME,
+                ITEM_MST.ITEM_BRAND,
+			  ITEM_DTL_MST.REMARK,
+			  CATEGORY_MST.SECTION_NAME,
+			  ADDON_MST.DISPLAY_ORDER,
+			  CATEGORY_MST.DISPLAY_ORDER
+			  </isEqual>
+			  </isNotNull>
+			  </dynamic>
+	</select>
+	<!-- Update record -->
+    <update id="doUpdateStock" parameterClass="jp.co.cyms.apps.fac001.bean.OrderDtlBean">
+		UPDATE STOCK
+		SET QTY1 = (QTY1 + #itemQty#)
+		WHERE
+		STOCK.ITEM_CD = #itemCd#
+		AND STOCK.COUNTRY_CD = #countryCd#
+   </update>
+   <update id="updateConfig">
+		UPDATE CONFIG SET (REDIRECT) = (0)
+	</update>
+	<update id="printOrder" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		UPDATE ORDERS SET (PRINT_FG) = (#printFg#) WHERE ORDER_ID = #orderId#
+	</update>
+	<update id="sendOrder" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+	UPDATE ORDERS
+		SET SEND_ORDER_FG = #sendOrderFg#
+		WHERE
+		ORDERS.ORDER_ID = #orderId#
+	</update>
+	<update id="sendOrderDtl">
+		UPDATE ORDER_DTL SET (SANKYU_ORDER_DT) = (SYSDATE) WHERE ORDER_ID = #orderId#
+	</update>
+	<update id="deleteOrder" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		UPDATE ORDERS SET (DELETE_FG) = (#deleteFg#) WHERE ORDER_ID = #orderId#
+	</update>
+	<delete id="deleteOrderForever" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		DELETE FROM ORDERS WHERE ORDER_ID = #orderId#
+	</delete>
+	<delete id="deleteOrderDtlForever" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		DELETE FROM ORDER_DTL WHERE ORDER_ID = #orderId#
+	</delete>
+	<delete id="deleteOrderCfgForever" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		DELETE FROM ORDER_CFG WHERE ORDER_ID = #orderId#
+	</delete>
+	<delete id="deleteOrderLeaseForever" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		DELETE FROM ORDER_LEASE WHERE ORDER_ID = #orderId#
+	</delete>
+	<delete id="deleteOrderStatusForever" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		DELETE FROM ORDER_STATUS WHERE ORDER_ID = #orderId#
+	</delete>
+	<select id="selectSankyuAdmin" resultClass="jp.co.cyms.apps.faa001.bean.UserBean">
+	SELECT
+		USER_MST.USER_ID   		 AS userId,
+		USER_MST.USER_NAME 		 AS userName,
+		USER_MST.EMAIL_ADDRESS   AS userEmail,
+		USER_MST.USER_AUTHORITY  AS userAuthorityCd,
+		USER_MST.COMPANY_CD 	 AS userCompanyCd,
+		COMPANY_MST.COMPANY_NAME AS companyName,
+		COUNTRY_MST.COUNTRY_CD   AS countryCd,
+		COUNTRY_MST.COUNTRY_NAME AS countryName		
+	FROM USER_MST
+	LEFT JOIN COMPANY_MST
+	ON USER_MST.COMPANY_CD = COMPANY_MST.COMPANY_CD
+	LEFT JOIN COUNTRY_MST
+	ON COUNTRY_MST.COUNTRY_CD = COMPANY_MST.COUNTRY_CD
+  	WHERE USER_MST.USER_AUTHORITY = #userAuthorityCd#
+  	AND USER_MST.COMPANY_CD IN ( SELECT COMPANY_MST.COMPANY_CD from COMPANY_MST 
+  							   where COMPANY_MST.COUNTRY_CD = (select COMPANY_MST.COUNTRY_CD from COMPANY_MST where COMPANY_MST.COMPANY_CD = #userCompanyCd#)
+                               UNION
+    SELECT COMPANY_MST.COMPANY_CD from COMPANY_MST 
+  							   where COMPANY_MST.COUNTRY_CD = (select COMPANY_MST.COUNTRY_CD from COMPANY_MST where COMPANY_MST.COMPANY_CD = 'SG'))
+	</select>
+	
+	<!-- Get Max Running Serial No -->
+	<select id="getMaxRunningSerialNo" resultClass="int">
+		SELECT 
+    		COALESCE (MAX (CASE 
+                		WHEN LENGTH(TRIM(TRANSLATE(SUBSTR(ORDER_ID, 3, LENGTH(ORDER_ID)-5), ' 0123456789', ' '))) IS NOT NULL
+                		THEN 0
+                		ELSE TO_NUMBER(SUBSTR(ORDER_ID, 3, LENGTH(ORDER_ID)-5))
+                	  END), 0)
+    	FROM ORDERS WHERE TO_NUMBER(SUBSTR(ORDER_ID, 1, 2)) = #yearCreateOrder#
+	</select>
+</sqlMap>

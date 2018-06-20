@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC0023">
+	<!-- get order -->
+	<select id="getOrder" resultClass="jp.co.cyms.apps.fac001.bean.OrderBean">
+		SELECT 
+		  ORDERS.ORDER_ID 			orderId,
+		  ORDERS.QUOTE_MRC 			quoteMrc,
+		  ORDERS.QUOTE_OTC 			quoteOtc,
+		  ORDERS.COUNTRY_CD 		countryCd,
+		  ORDERS.COMPANY_CD 		companyCd,
+		  ORDERS.DEPT_CD 			deptCd,
+		  ORDERS.TTL_MRC 			ttlMrc,
+		  ORDERS.TTL_OTC 			ttlOtc,
+		  ORDERS.TTL_AVG 			ttlAvg,
+		  ORDERS.TTL_MON 			ttlMon,
+		  ORDERS.REMARK   			remark,
+		  ORDERS.SAVE_FG 			saveFg,
+		  ORDERS.PRINT_FG 			printFg,
+		  ORDERS.SEND_ORDER_FG 		sendOrderFg,
+		  ORDERS.DELETE_FG 			deleteFg,
+		  ORDERS.BILL_FG 			billFg,
+		  ORDERS.BILL_MTH_START 	billMthStart,
+		  ORDERS.BILL_MTH_END 		billMthEnd,
+		  COMPANY_MST.COMPANY_NAME  companyName,
+		  COMPANY_MST.ATTN_TO_NAME  attnToName,
+		  COMPANY_MST.CC_NAME 		ccName,
+		  DEPT_MST.DEPT_NAME 		deptName
+		FROM ORDERS
+		LEFT JOIN COMPANY_MST
+		ON ORDERS.COMPANY_CD = COMPANY_MST.COMPANY_CD
+		LEFT JOIN DEPT_MST
+		ON DEPT_MST.COMPANY_CD =ORDERS.COMPANY_CD
+		AND DEPT_MST.DEPT_CD   = ORDERS.DEPT_CD
+		WHERE ORDERS.ORDER_ID = #orderId#
+	</select>
+	
+	<select id="getListOrderStatus" resultClass="jp.co.cyms.apps.fac001.bean.Pac0023OrderStatusBean">
+		SELECT TO_CHAR(ORDER_STATUS.TIMESTAMP, 'DD-Mon-YY HH24:MI:SS') timestamp,
+		  ORDER_STATUS.UPDATED_USER updatedUser,
+		  ORDER_STATUS.PHASE,
+		  ORDER_STATUS.ACTION,
+		  ORDER_STATUS.DELIVER_CATEGORY deliverCategory,
+		  ORDER_STATUS.DELIVER_QTY deliveryQty,
+		  ORDER_DTL.ITEM_QTY itemQty,
+		  CATEGORY_MST.CATEGORY_NAME categoryName
+		FROM ORDER_STATUS
+		LEFT JOIN CATEGORY_MST
+		ON ORDER_STATUS.DELIVER_CATEGORY = CATEGORY_MST.CATEGORY_ABBREV
+		LEFT JOIN ORDER_DTL
+		ON ORDER_STATUS.ORDER_ID    = ORDER_DTL.ORDER_ID
+		AND ORDER_DTL.CATEGORY_CD   = CATEGORY_MST.CATEGORY_CD
+		WHERE ORDER_STATUS.ORDER_ID = #orderId#
+		ORDER BY ORDER_STATUS.TIMESTAMP, CATEGORY_MST.DISPLAY_ORDER ASC
+	</select>
+	
+</sqlMap>

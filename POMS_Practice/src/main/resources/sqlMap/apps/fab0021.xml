@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAB0021">
+    <!-- get category code -->
+    <select id="select01" resultClass="java.lang.String">
+        SELECT CATEGORY_CD FROM CATEGORY_MST WHERE CATEGORY_ABBREV IS NOT NULL ORDER BY DISPLAY_ORDER
+    </select>
+    
+    <!-- get item code -->
+    <select id="select02" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean" resultClass="java.lang.String">
+        SELECT DISTINCT ITEM_CD FROM ITEM_MST 
+        	WHERE 
+        		CATEGORY_CD = #categoryCd# 
+        		AND DELETE_FG IS NULL AND NO_USE_FG IS NULL
+        		ORDER BY ITEM_CD
+    </select>
+    
+    <!-- get category name -->
+    <select id="select03" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean" resultClass="java.lang.String">
+        SELECT CATEGORY_NAME FROM CATEGORY_MST WHERE CATEGORY_CD = #categoryCd# AND CATEGORY_ABBREV IS NOT NULL
+    </select>
+    
+    <!-- get item name -->
+    <select id="select04" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean" resultClass="java.lang.String">
+        SELECT DISTINCT ITEM_NAME FROM ITEM_MST WHERE ITEM_CD = #itemCd# AND CATEGORY_CD = #categoryCd# AND DELETE_FG IS NULL AND NO_USE_FG IS NULL
+    </select>
+    
+    <!-- get item_dtl_mst -->
+    <select id="select05" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean" resultClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean">
+        SELECT 
+		  DTL.CATEGORY_CD AS categoryCd,
+		  DTL.ITEM_CD          AS itemCd,
+		  DTL.LINK_TO_IMAGE    AS linkToImage,
+		  DTL.IMAGE_NAME       AS imageName,
+		  DTL.IMAGE_SIZE       AS imageSize,
+		  DTL.LINK_TO_PDF      AS linkToPdf,
+		  DTL.PDF_NAME         AS pdfName,
+		  DTL.PDF_SIZE         AS pdfSize,
+		  DTL.REMARK as remark,
+		  CATE.CATEGORY_NAME AS categoryName,
+		  ITEM.ITEM_NAME AS itemName
+		FROM ITEM_DTL_MST DTL
+		  LEFT JOIN CATEGORY_MST CATE ON DTL.CATEGORY_CD = CATE.CATEGORY_CD
+		  LEFT JOIN 
+		  (SELECT DISTINCT ITEM_CD, ITEM_NAME FROM ITEM_MST) ITEM
+		  ON DTL.ITEM_CD = ITEM.ITEM_CD
+		WHERE DTL.ITEM_CD = #itemCd# AND DTL.CATEGORY_CD = #categoryCd#
+    </select>
+    
+    <!-- insert item_dtl_mst -->
+    <insert id="insertItemDtl" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean">
+        INSERT INTO ITEM_DTL_MST
+          (
+             CATEGORY_CD
+            ,ITEM_CD
+            ,LINK_TO_IMAGE
+            ,IMAGE_NAME
+            ,IMAGE_SIZE
+            ,LINK_TO_PDF
+            ,PDF_NAME
+            ,PDF_SIZE
+            ,REMARK
+            ,UPDATED_USER
+			,UPDATED_DT_UTC
+			,UPDATED_DT_SERVER
+			,UPDATED_DT_LOCAL
+			,EXCLUSIVE_FG
+          )
+          VALUES 
+          (
+            #categoryCd#
+            ,#itemCd#
+            ,#linkToImage#
+            ,#imageName#
+            ,#imageSize#
+            ,#linkToPdf#
+            ,#pdfName#
+            ,#pdfSize#
+            ,#remark#
+            ,#updatedUser#
+			,SYSDATE - #timeDifference#/24
+			,SYSDATE
+			,#updatedDtLocal#
+			,#exclusiveFg#
+          )
+    </insert>
+    
+    <!-- update item_dl_mst -->
+    <update id="updateItemDtl" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean">
+        UPDATE ITEM_DTL_MST SET
+          	LINK_TO_IMAGE = #linkToImage#,
+          	IMAGE_NAME = #imageName#,
+          	IMAGE_SIZE = #imageSize#,
+          	LINK_TO_PDF = #linkToPdf#,
+          	PDF_NAME = #pdfName#,
+          	PDF_SIZE = #pdfSize#,
+          	REMARK = #remark#,
+          	UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+        WHERE 
+          	ITEM_CD = #itemCd# 
+          	AND CATEGORY_CD = #categoryCd#
+    </update>
+    
+    <!-- delete item_mst -->
+    <update id="deleteItemMst" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean">
+    	UPDATE ITEM_MST SET 
+    		DELETE_FG = '1',
+    		UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+    	WHERE ITEM_CD = #itemCd#
+    </update>
+</sqlMap>

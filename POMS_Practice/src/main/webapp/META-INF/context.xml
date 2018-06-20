@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Server Development -->
+<!-- <Context>
+  <Resource
+     name="dataSource"
+     type="javax.sql.DataSource"
+     driverClassName="oracle.jdbc.driver.OracleDriver"
+     password="poms_pass"
+     username="poms_dev"
+     url="jdbc:oracle:thin:@172.16.19.184:1521:CDMS"
+     initialSize="10"
+     maxActive="100"
+     maxIdle="50"
+     maxWait="5000"
+     minIdle="10"
+     testWhileIdle="true"
+     timeBetweenEvictionRunsMillis="10000"
+     validationQuery="select 1 from dual"/>
+</Context> -->
+
+<!-- Server Customer -->
+<!-- <Context>
+  <Resource
+     name="dataSource"
+     type="javax.sql.DataSource"
+     driverClassName="oracle.jdbc.driver.OracleDriver"
+     password="poms_pass"
+     username="poms_dev"
+     url="jdbc:oracle:thin:@172.16.213.93:1521:POMS"
+     initialSize="10"
+     maxActive="100"
+     maxIdle="50"
+     maxWait="5000"
+     minIdle="10"
+     testWhileIdle="true"
+     timeBetweenEvictionRunsMillis="10000"
+     validationQuery="select 1 from dual"/>
+</Context> -->
+
+<!-- Server End User -->
+<!-- <Context>
+  <Resource
+     name="dataSource"
+     type="javax.sql.DataSource"
+     driverClassName="oracle.jdbc.driver.OracleDriver"
+     password="POMSOpa55w0rd"
+     username="POMSAdmin"
+     url="jdbc:oracle:thin:@192.168.200.22:1523:POMS"
+     initialSize="10"
+     maxActive="100"
+     maxIdle="50"
+     maxWait="5000"
+     minIdle="10"
+     testWhileIdle="true"
+     timeBetweenEvictionRunsMillis="10000"
+     validationQuery="select 1 from dual"/>
+</Context> -->
+
+<!-- Server Development 172.16.18.191 -->
+<Context>
+  <Resource
+     name="dataSource"
+     type="javax.sql.DataSource"
+     driverClassName="oracle.jdbc.driver.OracleDriver"
+     password="kcsg_test"
+     username="poms_admin"
+     url="jdbc:oracle:thin:@172.16.18.191:1521:ORCL"
+     initialSize="10"
+     maxTotal="100"
+     maxIdle="50"
+     maxWaitMillis="5000"
+     minIdle="10"
+     testWhileIdle="true"
+     timeBetweenEvictionRunsMillis="10000"
+     validationQuery="select 1 from dual"/>
+</Context>

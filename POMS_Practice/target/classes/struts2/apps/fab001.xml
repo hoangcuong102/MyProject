@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="fab001" namespace="/fab001" extends="default">
+		<action name="sab0011" method="execute"
+			class="jp.co.cyms.apps.fab001.action.Pab0011Action">
+			<result name="success">/jsp/fab001/sab0011.jsp</result>
+		</action>
+		<action name="sab0011_01" method="loadListItemData"
+			class="jp.co.cyms.apps.fab001.action.Pab0011Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0011_02" method="doUpdate"
+			class="jp.co.cyms.apps.fab001.action.Pab0011Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0011_03" method="doAdd"
+			class="jp.co.cyms.apps.fab001.action.Pab0011Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0011_04" method="doDelete"
+			class="jp.co.cyms.apps.fab001.action.Pab0011Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+
+		<action name="sab0021" class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success">/jsp/fab001/sab0021.jsp</result>
+		</action>
+		<action name="sab0021_1" method="doEvent01"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_2" method="doEvent02"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_3" method="doEvent03"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_4" method="doEvent04"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_5" method="doEvent05"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_6" method="doEvent06"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${catalogPdfName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0021_7" method="checkFileExist"
+			class="jp.co.cyms.apps.fab001.action.Pab0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+
+		<action name="sab0031" method="execute"
+			class="jp.co.cyms.apps.fab001.action.Pab0031Action">
+			<result name="success">/jsp/fab001/sab0031.jsp</result>
+		</action>
+		<action name="sab0031_01" method="loadItem"
+			class="jp.co.cyms.apps.fab001.action.Pab0031Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sab0031_02" method="doSave"
+			class="jp.co.cyms.apps.fab001.action.Pab0031Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+	</package>
+</struts>

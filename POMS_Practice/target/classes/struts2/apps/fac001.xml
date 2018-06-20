@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="fac001" namespace="/fac001" extends="default">
+		<!-- PC Order Entry -->
+		<result-types>
+			<result-type name="imageResult"
+				class="jp.co.cyms.common.CustomImageBytesResult" />
+		</result-types>
+
+		<action name="sac0011" method="execute"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success">/jsp/fac001/sac0011.jsp</result>
+		</action>
+		<action name="sac0011_01" method="allDataSac0011"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="json"></result>
+			<result name="input" type="json"></result>
+		</action>
+		<action name="sac0011_03" method="insertOrder"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="json"></result>
+			<result name="input" type="json"></result>
+		</action>
+		<action name="sac0011_04" method="printOrder"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${reportName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+		<action name="sac0011_05" method="sendOrder"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="json"></result>
+			<result name="input" type="json"></result>
+		</action>
+		<action name="sac0011_06" method="deleteOrder"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="json"></result>
+			<result name="input" type="json"></result>
+		</action>
+		<action name="ImageAction" class="jp.co.cyms.common.action.ImageAction">
+			<result name="success" type="imageResult">
+			</result>
+		</action>
+
+		<action name="sac0011_07" method="editOrder"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success">/jsp/fac001/sac0011.jsp</result>
+			<result name="input" type="json"></result>
+			<result name="error" type="redirectAction">
+				<param name="namespace">/fac001</param>
+				<param name="actionName">sac0011</param>
+			</result>
+		</action>
+		<action name="sac0011_08" method="downloadItemPdf"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${reportName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name="none" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0011_09" method="updateConfig"
+			class="jp.co.cyms.apps.fac001.action.Pac0011Action">
+			<result name="success" type="json"></result>
+		</action>
+
+		<!-- PC Order Progress Update / Inquiry -->
+		<action name="sac0021" method="execute"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success">/jsp/fac001/sac0021.jsp</result>
+		</action>
+		<action name="sac0021_01" method="doSearch"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0021_02" method="doCancel"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0021_03" method="doReject"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0021_04" method="doApprove"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0021_05" method="doDownload"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${reportName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name="error">/jsp/fac001/sac0021.jsp</result>
+		</action>
+		<action name="sac0021_06" method="doEdit"
+			class="jp.co.cyms.apps.fac001.action.Pac0021Action">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/fac001</param>
+				<param name="actionName">sac0011_07</param>
+				<param name="orderId">${orderId}</param>
+			</result>
+			<result name="error" type="redirectAction">
+				<param name="namespace">/fac001</param>
+				<param name="actionName">sac0021</param>
+			</result>
+		</action>
+
+		<action name="sac0022" method="execute"
+			class="jp.co.cyms.apps.fac001.action.Pac0022Action">
+			<result name="success">/jsp/fac001/sac0022.jsp</result>
+		</action>
+		<action name="sac0022_01" method="loadOrderLease"
+			class="jp.co.cyms.apps.fac001.action.Pac0022Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="sac0022_02" method="doSave"
+			class="jp.co.cyms.apps.fac001.action.Pac0022Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+
+		<action name="sac0023" method="execute"
+			class="jp.co.cyms.apps.fac001.action.Pac0023Action">
+			<result name="success">/jsp/fac001/sac0023.jsp</result>
+		</action>
+		<action name="sac0023_01" method="loadAllOrderData"
+			class="jp.co.cyms.apps.fac001.action.Pac0023Action">
+			<result name="success" type="json"></result>
+		</action>
+
+		<!-- fac0024 -->
+		<action name="sac0024" method="execute"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success">/jsp/fac001/sac0024.jsp</result>
+		</action>
+		<action name="sac0024_01" method="loadDataOrderDo"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doGenerateNewAction" method="doGenerateNew"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doSignedUploadAction" method="doSignedUpload"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doSignedDeleteAction" method="doSignedDelete"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doGeneratedGenerateAction" method="doGeneratedGenerate"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doGeneratedDeleteAction" method="doGeneratedDelete"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doDeleteAction" method="doDelete"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doSaveAction" method="doSave"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<action name="doDownloadAction" method="doDownload"
+			class="jp.co.cyms.apps.fac001.action.Pac0024Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${reportName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name="error" type="json"></result>
+		</action>
+	</package>
+</struts>

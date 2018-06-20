@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC0022">
+	<!-- get all order lease -->
+	<select id="getOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.OrderBean" resultClass="jp.co.cyms.apps.fac001.bean.Pac0022Bean">
+		SELECT
+		  (SELECT COUNT(*)
+		  FROM ORDER_DO
+		  WHERE ORDER_DO.DO_NO          = orderLease.DO_NO
+		  AND ORDER_DO.DO_GENERATED_FG = '1'
+		  AND orderLease.DO_NO IS NOT NULL
+		  ) AS isDisabled,
+			orderLease.ORDER_ID AS orderId,
+			orderLease.QUOTE_MRC AS quoteMrc,
+			orderLease.QUOTE_OTC AS quoteOtc,
+			orderLease.ITEM_CD AS itemCd,
+			itemMst.ITEM_NAME AS itemName,
+			orderLease.CATEGORY_CD AS categoryCd,
+			categoryMst.CATEGORY_ABBREV AS categoryAbbrev,
+			categoryMst.CATEGORY_NAME AS categoryName,
+			orderLease.LEASE_NO AS leaseNo,
+			orderLease.SERIAL_NO AS serialNo,
+			orderLease.ASSET_NO AS assetNo,
+			TO_CHAR(orderLease.DELIVER_DT, 'DD-Mon-YY') AS deliverDt,
+			TO_CHAR(orderLease.END_DT, 'DD-Mon-YY') AS endDt,
+			itemMst.UNIT_PRICE AS leaseFee,
+			TO_CHAR(orderLease.WARRANTY_DT, 'DD-Mon-YY') AS warrantyDt,
+			orderLease.OFFICE_LIC_NO AS officeLicNo,
+			orderLease.ACCESS_LIC_NO AS accessLicNo,
+			orderLease.DISPLAY_ORDER AS displayOrder
+		FROM
+			ORDER_LEASE orderLease
+		LEFT JOIN 
+			ORDERS orders
+      		ON orders.ORDER_ID = orderLease.ORDER_ID
+		LEFT JOIN 
+			ITEM_MST itemMst
+		  	ON orderLease.ITEM_CD = itemMst.ITEM_CD AND orders.COUNTRY_CD = itemMst.COUNTRY_CD
+		LEFT JOIN 
+			CATEGORY_MST categoryMst
+		  	ON orderLease.CATEGORY_CD = categoryMst.CATEGORY_CD
+		WHERE orderLease.ORDER_ID = #orderId#
+		ORDER BY categoryMst.DISPLAY_ORDER, orderLease.DISPLAY_ORDER
+	</select>
+	
+	<!-- update order lease -->
+	<update id="updateOrderLease" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0022Bean">
+		UPDATE ORDER_LEASE SET
+			LEASE_STATUS = #leaseStatus# ,
+			LEASE_NO = #leaseNo# ,
+			SERIAL_NO = #serialNo# ,
+			ASSET_NO = #assetNo# ,
+			DELIVER_DT = #deliverDt# ,
+			END_DT = #endDt# ,
+			DELIVER_MTH = #deliverMth# ,
+			WARRANTY_DT = #warrantyDt# ,
+			OFFICE_LIC_NO = #officeLicNo# ,
+			ACCESS_LIC_NO = #accessLicNo# ,
+		  	UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE 
+			ORDER_ID = #orderId#
+			AND CATEGORY_CD = #categoryCd#
+		  	AND ITEM_CD = #itemCd#
+		  	AND DISPLAY_ORDER = #displayOrder#
+	</update>
+	
+		<!-- update order dtl -->
+	<update id="updateOrderDtl" parameterClass="jp.co.cyms.apps.fac001.bean.Pac0022Bean">
+		UPDATE ORDER_DTL
+		SET 
+			KDDI_DELIVER_DT = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT MAX(DELIVER_DT) 
+											FROM ORDER_LEASE 
+											WHERE ORDER_LEASE.ORDER_ID = #orderId#
+												AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			KDDI_DELIVER_QTY = ( CASE
+									WHEN ( SELECT COUNT(*)
+										   FROM ORDER_LEASE
+										   WHERE DELIVER_DT           IS NOT NULL
+											   AND ORDER_LEASE.ORDER_ID    = #orderId#
+											   AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  ) = 0
+									THEN NULL
+									ELSE  ( SELECT COUNT(*)
+										    FROM ORDER_LEASE
+										    WHERE DELIVER_DT           IS NOT NULL
+											    AND ORDER_LEASE.ORDER_ID    = #orderId#
+											    AND ORDER_LEASE.CATEGORY_CD = ORDER_DTL.CATEGORY_CD
+										  )
+									END
+								),
+			UPDATED_USER = #updatedUser# ,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24 ,
+			UPDATED_DT_SERVER = SYSDATE ,
+			UPDATED_DT_LOCAL = #updatedDtLocal#
+		WHERE ORDER_DTL.ORDER_ID    = #orderId#
+	</update>
+</sqlMap>

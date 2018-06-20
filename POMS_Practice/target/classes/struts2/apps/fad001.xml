@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="fad001" namespace="/fad001" extends="default">
+	
+		<!-- 	Data Download (sad0011) -->
+		<action name="sad0011" method="execute"
+			class="jp.co.cyms.apps.fad001.action.Pad0011Action">
+			<result name="success">/jsp/fad001/sad0011.jsp</result>
+		</action>
+		
+		<action name="doDataDownloadAction" method="doDataDownload"
+			class="jp.co.cyms.apps.fad001.action.Pad0011Action">
+			<result name="success" type="stream">
+		    	<param name="contentType">${contentType}</param>
+		     	<param name="contentDisposition">attachment;filename="${reportName}"</param>
+		     	<param name="bufferSize">1024</param>
+		     	<param name="inputName">inputStream</param>
+		   </result>
+			<result name="error">/jsp/fad001/sad0011.jsp</result>
+		</action>
+		
+		<action name="loadDataSad0011Action" method="loadDataSad0011"
+			class="jp.co.cyms.apps.fad001.action.Pad0011Action">
+			<result name="success" type="json"></result>
+		</action>
+		
+		<!-- 	PC Stock Management (sad0021) -->
+		<action name="sad0021" method="init"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success">/jsp/fad001/sad0021.jsp</result>
+		</action>
+
+		<action name="loadDataAction" method="loadData"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+		</action>
+
+		<action name="doSaveAction" method="doSave"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+
+		<action name="doDeleteAction" method="doDelete"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<action name="doCloseAction" method="doClose"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success">/jsp/faa001/saa0012.jsp</result>
+		</action>
+		
+		<action name="doUpdateCountryDataAction" method="doUpdateCountryData"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<action name="doUpdateCountryData2Action" method="doUpdateCountryData2"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<action name="checkLockedDataAction" method="checkLockedData"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<action name="checkLockedDataByAnotherAction" method="checkLockedDataByAnother"
+			class="jp.co.cyms.apps.fad001.action.Pad0021Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+	</package>
+</struts>

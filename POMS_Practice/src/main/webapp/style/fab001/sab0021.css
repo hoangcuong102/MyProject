@@ -1,0 +1,114 @@
+.text-right {
+	text-align: right;
+}
+
+.no-padding-right {
+	padding-right: 0;
+}
+
+.no-border-form-control {
+	border: none;
+	font-weight: normal;
+	color: black;
+}
+
+#noImage {
+	height: 10em;
+	vertical-align: middle;
+}
+
+.middle-text {
+	display: inline-block;
+	//vertical-align: middle;
+	margin-left: -1px;
+}
+
+.middle-text-hidden {
+	height: 100%;
+	width: 0;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.menu_top_buttom_left {
+    float: left;
+    margin-top: 8px;
+}
+
+.btn-group a:VISITED {
+    color: white;
+}
+
+#modalConfirmOverwrite, #modalConfirmFileNotFound, #modalConfirmInvalid, #modalConfirmValid {
+    margin-top: 200px;
+}
+
+.header-btn{
+	padding-right: 0;
+	padding-left: 5px;
+}
+
+.width-full{
+	width: 100%;
+}
+
+.btn-float-right{
+	float: right;
+	margin-left: 10px;
+}
+
+.btn-float-left{
+	float: left;
+}
+
+.btn-del{
+	float: left;
+	margin-left: 0;
+}
+
+#remarkText{
+	resize: none;
+}
+
+.btn-brower{
+	background-color: #eee;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+#imageBox{
+	height: 240px;
+	object-fit: scale-down;
+	object-position: 0 0;
+}
+
+#formSab0021 .form-group{
+	margin-bottom: 8px;
+}
+
+.input-error{
+	border: 1px solid red !important;
+}
+
+.btn-error{
+	border-top: 1px solid red !important;
+	border-right: 1px solid red !important;
+	border-bottom: 1px solid red !important;
+}
+
+#span-file-name, #span-file-size, #linkCatalogPdf{
+	color: rgb(51, 122, 183);
+}
+
+#span-file-name{
+	text-decoration: underline;
+}
+
+#linkCatalogPdf:hover{
+	text-decoration: none;
+}
+
+.no-margin-bottom{
+	margin-bottom: 5px !important;
+	padding-left: 10px !important;
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+  <bean id="initSystem" class="jp.co.cyms.system.InitSystem">
+    <property name="sqlMapClientTemplate">
+        <ref local="sqlMapClientTemplate"/>
+    </property>
+  </bean>
+
+<!-- アプリケーション全体のBean定義 -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/dataSource" />
+		<property name="resourceRef" value="true" />
+	</bean>
+<!-- ======================================== トランザクション・AOP定義 -->
+  <!-- トランザクションマネージャの定義 -->
+  <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource">
+      <ref bean="dataSource"/>
+    </property>
+  </bean>
+  
+
+  <!-- トランザクションインタセプタの定義 -->
+  <tx:advice id="transactionInterceptor" transaction-manager = "transactionManager">
+    <tx:attributes>
+      <tx:method name="*Action" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+
+  <!-- AOPの設定 -->
+  <aop:aspectj-autoproxy />
+   <aop:config proxy-target-class="true">
+    <aop:pointcut id="actionBeans"  expression="execution(* java.*.action.*.*Action(..))"/>
+    <aop:advisor
+         pointcut-ref="actionBeans"
+         advice-ref="transactionInterceptor"/>
+  </aop:config>
+
+<!-- ======================================== iBATIS定義 -->
+  <!-- SqlMap定義 -->
+  <bean id="sqlMapClient"
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="configLocation" value="/WEB-INF/sqlMapConfig.xml" />
+  </bean>
+  
+  <bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+	<property name="sqlMapClient">
+        <ref local="sqlMapClient"/>
+	</property>
+    <property name="dataSource">
+        <ref bean="dataSource"/>
+    </property>
+  </bean>
+</beans>

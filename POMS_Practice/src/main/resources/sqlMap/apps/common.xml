@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="COMMON">
+	<select id="getConfig" resultClass="jp.co.cyms.common.bean.ConfigBean">
+		SELECT
+			IMAGE_DIR 			AS imageDir,
+			IMAGE_LIMIT 		AS imageLimit,
+			PDF_DIR 			AS pdfDir,
+			PDF_LIMIT 			AS pdfLimit,
+			QUOTE_DIR 			AS quoteDir,
+			DO_DIR 				AS doDir,
+			RESULT_DIR 			AS resultDir,
+			REDIRECT 			AS redirect,
+			SERVER_LOCATION 	AS serverLocation,
+			LIBRE_OFFICE_FOLDER	AS libreOffice,
+			EXCEL_TEMP 		AS excelTemp,
+			EXCEL_OUTFILES 	AS excelOutFiles,
+			EXCEL_NAME_PAD0011_0 AS excelNamePad00110,
+			EXCEL_NAME_PAD0011_1 AS excelNamePad00111,
+			EXCEL_NAME_PAD0011_2 AS excelNamePad00112,
+			EXCEL_NAME_PAD0011_3 AS excelNamePad00113,
+			EXCEL_NAME_SAC0021 AS excelNameSac0021,
+			EXCEL_NAME_SAC0024 AS excelNameSac0024,
+			ADDRESS AS address,
+			PASSWORD_ADDRESS AS passwordAddress,
+			HOST_ADDRESS AS hostAddress,
+			PORT_ADDRESS AS portAddress
+		FROM CONFIG
+	</select>
+	<select id="getCountries" resultClass="jp.co.cyms.common.bean.CountryBean">
+		SELECT COUNTRY_CD AS countryCd,
+		  COUNTRY_NAME AS countryName,
+		  TIME_DIFFERENCE AS timeDiffrence,
+		  DISPLAY_ORDER AS displayOrder
+		FROM COUNTRY_MST
+		ORDER BY DISPLAY_ORDER ASC
+	</select>
+	<select id="getListCategory" resultClass="jp.co.cyms.common.bean.CategoryBean">
+	SELECT CATEGORY_MST.CATEGORY_CD categoryCd,
+	  CATEGORY_MST.CATEGORY_NAME 	categoryName,
+	  CATEGORY_MST.CATEGORY_TYPE 	categoryType,
+	  CATEGORY_MST.CATEGORY_ABBREV  categoryAbbrev,
+	  CATEGORY_MST.DISPLAY_ORDER 	displayOrder,
+	  CATEGORY_MST.SECTION_NAME 	sectionName,
+	  ADDON_MST.ADDON_CD 			addonCd
+	FROM CATEGORY_MST
+	LEFT JOIN ADDON_MST
+	ON ADDON_MST.ADDON_CD = CATEGORY_MST.CATEGORY_CD
+	ORDER BY displayOrder
+	</select>
+</sqlMap>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAA001">
+	<!-- Check user login -->
+	<select id="select01" resultClass="jp.co.cyms.apps.faa001.bean.UserBean">
+	SELECT
+		USER_MST.USER_ID   		 AS userId,
+		USER_MST.USER_NAME 		 AS userName,
+		USER_MST.EMAIL_ADDRESS   AS userEmail,
+		USER_MST.USER_AUTHORITY  AS userAuthorityCd,
+		USER_MST.COMPANY_CD 	 AS userCompanyCd,
+		COMPANY_MST.COMPANY_NAME AS companyName,
+		COUNTRY_MST.COUNTRY_CD   AS countryCd,
+		COUNTRY_MST.COUNTRY_NAME AS countryName		
+	FROM USER_MST
+	LEFT JOIN COMPANY_MST
+	ON USER_MST.COMPANY_CD = COMPANY_MST.COMPANY_CD
+	LEFT JOIN COUNTRY_MST
+	ON COUNTRY_MST.COUNTRY_CD = COMPANY_MST.COUNTRY_CD
+	WHERE USER_MST.USER_ID = #userId#
+	AND USER_MST.PASSWORD  = #userPassword#
+	</select>
+</sqlMap>

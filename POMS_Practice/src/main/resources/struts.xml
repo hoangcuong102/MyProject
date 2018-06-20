@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+   "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+   "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.custom.i18n.resources"
+		value="/properties/error,/properties/system,/properties/language/label-en" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.action.excludePattern" value="/SchServlet"></constant>
+	<constant name="struts.multipart.maxSize" value="10485760" />
+	<package name="default" namespace="/" extends="struts-default,json-default">
+		<interceptors>
+			<interceptor name="authentication"
+				class="jp.co.cyms.base.interceptors.AuthenticationInterceptor"></interceptor>
+			<interceptor name="permission"
+				class="jp.co.cyms.base.interceptors.PermissionInterceptor"></interceptor>
+			<interceptor name="servletConfig"
+				class="org.apache.struts2.interceptor.ServletConfigInterceptor" />
+			<interceptor name="i18n"
+				class="com.opensymphony.xwork2.interceptor.I18nInterceptor" />
+			<interceptor-stack name="logException">
+				<interceptor-ref name="authentication"></interceptor-ref>
+				<interceptor-ref name="permission"></interceptor-ref>
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="i18n" />
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="exception">
+					<param name="logEnabled">true</param>
+					<param name="logLevel">info</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="logException" />
+
+		<default-action-ref name="index" />
+		<global-results>
+			<result name="login" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+			<result name="unableError" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+			<result name="homeAction" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0012</param>
+			</result>
+			<result name="systemError">/jsp/error/systemError.jsp</result>
+			<result name="invalidError">/jsp/error/invalidError.jsp</result>
+			<result name="exclusiveError">/jsp/error/exclusiveError.jsp</result>
+			<result name="timeoutError">/jsp/error/timeoutError.jsp</result>
+			<result name="dynamicAction" type="redirectAction">
+				<param name="namespace">/${currentFunctionId}</param>
+				<param name="actionName">${currentScreenId}.action</param>
+			</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.IllegalArgumentException"
+				result="unableError" />
+			<exception-mapping exception="java.lang.Exception"
+				result="systemError" />
+			<exception-mapping
+				exception="jp.co.cyms.base.exception.BaseInvalidAuthorityException"
+				result="invalidError" />
+			<exception-mapping
+				exception="jp.co.cyms.base.exception.BaseSessionTimeoutException"
+				result="timeoutError" />
+			<exception-mapping exception="jp.co.cyms.base.exception.BaseApiException"
+				result="apiError" />
+			<exception-mapping exception="jp.co.cyms.base.exception.BaseExclusiveException"
+				result="exclusiveError" />
+		</global-exception-mappings>
+
+		<action name="index">
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+		</action>
+	</package>
+	<package name="common" namespace="/" extends="json-default">
+		<action name="common001" method="getAllInfo"
+			class="jp.co.cyms.common.action.CommonAction">
+			<result name="success" type="json"></result>
+			<result name="login" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+		</action>
+		<action name="redirectToHome" method="redirectToHome"
+			class="jp.co.cyms.common.action.CommonAction">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+		</action>
+	</package>
+	<include file="./struts2/apps/faa001.xml" />
+	<include file="./struts2/apps/fab001.xml" />
+	<include file="./struts2/apps/fac001.xml" />
+	<include file="./struts2/apps/fad001.xml" />
+</struts>
+
