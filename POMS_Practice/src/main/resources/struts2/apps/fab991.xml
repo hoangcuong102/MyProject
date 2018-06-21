@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="fab991" namespace="/fab991" extends="default">
+		<!-- Recode SAB0021 => SAB9921 By HoangCuong -->
+
+		<action name="sab9921"
+			class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success">/jsp/fab991/sab99211.jsp</result>
+
+		</action>
+
+
+		<!-- End Action SAB9921 -->
+
+	</package>
+
+</struts>
+
+

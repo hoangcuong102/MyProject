@@ -15,7 +15,7 @@ public class Pab0021Dao extends BaseDao{
      *
      */
    public Pab0021Dao() {
-       super();
+      // super();
    }
    
    /**
@@ -30,7 +30,6 @@ public class Pab0021Dao extends BaseDao{
        list = (List<String>) this.queryList("FAB0021.select01");
        return list;
    }
-   
    /**
     * Get list category name
     * 

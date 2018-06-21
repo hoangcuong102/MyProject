@@ -25,6 +25,7 @@ public class MenuProperties {
 		MENU_31,
 		MENU_32,
 		MENU_33,
+		MENU_34,
 		;
 
 		public static MenuKey get(String key) {

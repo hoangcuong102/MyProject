@@ -8,6 +8,7 @@ var isUploadImage = false;
 var isUploadPdf = false;
 var categoryMaster = [];
 var categoryCdOld = "";
+
 $(document).ready(function () {
 	configInputFile();
 	

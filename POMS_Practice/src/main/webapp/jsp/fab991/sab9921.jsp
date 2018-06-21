@@ -16,27 +16,6 @@
 	
 <script type="text/javascript">
 
-function doUpload(type){
-	if (validateFileUpload(type)){
-		typeUpload = type;
-		// set finame to input text
-		if (type == 0){
-			//$("#file-image").val( $("#imageData").val().trim() );
-		}
-		
-		if (type == 1){
-			//$("#file-pdf").val( $("#catalogPdf").val().trim() );
-		}
-		
-		// show popup
-		if (checkFirstUpload(type)){
-			showConfirmDialog("upload","","",{"position":"200"});
-		} else {
-			//doOverwrite();
-			showConfirmDialogOverwrite();
-		}
-	}
-}
 </script>
 </head>
 <body>
@@ -61,13 +40,11 @@ function doUpload(type){
 			<!-- content -->
 			<div class="container-fluid">
 			
-				<div class="col-md-2 sidenav" id="mysidenav" style="background: #f3f3f3;">
+				<div class="col-md-2 sidenav" id="mysidenav"  style="display: ${menuInfo!=null && menuInfo.size() > 0 ? 'block' : 'none'};">
 					<s:include value="/jsp/common/menu_left.jsp" />
 				</div>
-
-				
-				<div class="container-fluid col-md-10">
-					
+		
+				<div class="container-fluid col-md-10">				
 						<div class="row title-row">
 						<span class="span-icon-menu"><img alt="icon computer"
 							src="<s:url value="/"/>images/icon_menu.png"> </span> <span

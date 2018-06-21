@@ -65,14 +65,14 @@ public class Pab0021Action extends Pab0021Form {
 	 * @return SUCCESS
 	 */
 	public String execute() throws Exception {
-		LOG.info("*************execute Start*************", "");
+		LOG.info("*************execute StartSAB0021*************", "");
 		// BL
 		Pab0021BL logic = new Pab0021BL();
 		// Get user info
 		userInfo = this.getUserInfo();
 		// Get list categoryCd
 		categoryCdList = logic.getListCategoryCd();
-		LOG.info("*************execute End*************", "");
+		LOG.info("*************execute EndSAB0021*************", "");
 		return SUCCESS;
 	}
 
