@@ -63,7 +63,7 @@
 								<div class="input-group dropdown">
 									<input type="text" class="form-control dropdown-toggle alphanumberic" value="" id="categoryCdValue" name="categoryCdValue" maxlength="10"/>
                                         <ul class="dropdown-menu" id="categoryCd" style="width: 100%; overflow: auto;">
-                                            <s:iterator value="category_cd" var="cate_cd">
+                                            <s:iterator value="listCategory_cd" var="cate_cd">
                                             	<li><a href="#" data-value="<s:property value="cate_cd"/>"><s:property value="cate_cd"/></a></li>
                                             </s:iterator>
                                         </ul>
@@ -84,10 +84,10 @@
 							<div class="col-md-5">
 								<div class="input-group dropdown">
 									<input type="text" class="form-control dropdown-toggle alphanumberic" value="" id="itemCdValue" name="itemCdValue" maxlength="10"/>
-                                        <ul class="dropdown-menu" id="categoryCd" style="width: 100%; overflow: auto;">
-                                            <li><a href="#">DEMO1</a></li>
+                                        <ul class="dropdown-menu" id="itemCd" style="width: 100%; overflow: auto;">
+                                            <!-- <li><a href="#">DEMO1</a></li>
                                             <li><a href="#" >DEMO2</a></li>
-                                            <li><a href="#">DEMO3</a></li>
+                                            <li><a href="#">DEMO3</a></li> -->
                                         </ul>
                                     <span role="button" class="input-group-addon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></span>
 								</div>

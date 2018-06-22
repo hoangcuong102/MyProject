@@ -6,14 +6,24 @@
 <struts>
 	<package name="fab991" namespace="/fab991" extends="default">
 		<!-- Recode SAB0021 => SAB9921 By HoangCuong -->
-
+		
 		<action name="sab9921"
 			class="jp.co.cyms.apps.fab991.action.Pab9921Action">
 			<result name="success">/jsp/fab991/sab99211.jsp</result>
 
 		</action>
-
-
+		
+		<!-- Event using to get Item_CD following Category_CD -->
+		<action name="sab9921_01" method="doEvent01" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="json"></result>
+			<result name ="error" type="json"></result>
+		</action>
+		
+		<!-- Event using to get item_Name following Item_CD -->
+		<action name="sab9921_02" method="doEvent02" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="json"></result>
+			<result name ="error" type="json"></result>
+		</action>
 		<!-- End Action SAB9921 -->
 
 	</package>

@@ -2,6 +2,7 @@ package jp.co.cyms.apps.fab991.dao;
 
 import java.util.List;
 
+import jp.co.cyms.apps.fab991.bean.Pab9921Bean;
 import jp.co.cyms.base.BaseDao;
 
 public class Pab9921Dao extends BaseDao {
@@ -16,12 +17,31 @@ public class Pab9921Dao extends BaseDao {
 	public List<String> getListCategory_CD() throws Exception{
 		List<String> list = null;
 		list = (List<String>) this.queryList("FAB9921.select01");
-		
 		return list;
 	}
 	
+	// Get Category Name
+	@SuppressWarnings("unchecked")
+	public String getCategoryName(Pab9921Bean pab9921Bean) throws Exception{
+		return (String) this.queryObject("FAB9921.select02", pab9921Bean);
+	}
+	
+	// Get list item code
+	@SuppressWarnings("unchecked")
+	public List<String> getListItem_CD(Pab9921Bean pab9921Bean) throws Exception{
+		List<String> list = null;
+		list = (List<String>) this.queryList("FAB9921.select03",pab9921Bean);
+		return list;
+	}
+	
+	//Get Item following item code and categoryCode
+	public Pab9921Bean getItemByItemCD_CategoryCD(Pab9921Bean pab9921Bean) throws Exception{
+		return (Pab9921Bean) this.queryObject("FAB9921.select04", pab9921Bean);
+	}
+	
+	
 	public static void main(String[] agvs) throws Exception {
 		Pab9921Dao dao = new Pab9921Dao();
-		dao.getListCategory_CD();
+		System.out.println(dao.getListCategory_CD().size());
 	}
 }

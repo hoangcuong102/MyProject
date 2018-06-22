@@ -31,7 +31,7 @@
     <select id="select05" parameterClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean" resultClass="jp.co.cyms.apps.fab001.bean.Pab0021Bean">
         SELECT 
 		  DTL.CATEGORY_CD AS categoryCd,
-		  DTL.ITEM_CD          AS itemCd,
+		  DTL.ITEM_CD          AS itemCda,
 		  DTL.LINK_TO_IMAGE    AS linkToImage,
 		  DTL.IMAGE_NAME       AS imageName,
 		  DTL.IMAGE_SIZE       AS imageSize,

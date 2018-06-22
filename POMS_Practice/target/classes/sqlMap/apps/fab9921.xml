@@ -5,7 +5,42 @@
 <sqlMap namespace="FAB9921">
 <!-- Get Category Code -->
 	<select id="select01" resultClass="java.lang.String">
-		SELECT CATEGORY_CD FROM CATEGORY_MST 
+		SELECT CATEGORY_CD FROM CATEGORY_MST WHERE CATEGORY_ABBREV IS NOT NULL
+	</select>
+	
+	<!-- Get Category Name allowing category code -->
+	<select id="select02" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
+		SELECT CATEGORY_NAME FROM CATEGORY_MST WHERE CATEGORY_CD = #category_cd# AND 
+													 CATEGORY_ABBREV IS NOT NULL
+	</select>
+	
+	<!-- Get item code -->
+	<select id="select03" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
+		SELECT DISTINCT ITEM_CD FROM ITEM_MST WHERE CATEGORY_CD = #category_cd# AND 
+													DELETE_FG IS NULL AND 
+													NO_USE_FG IS NULL
+											  ORDER BY ITEM_CD ASC
+	</select>
+	<!-- get item from ITEM_DTL_MST -->
+	<select id="select04" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
+		SELECT 
+		  DTL.CATEGORY_CD AS categoryCd,
+		  DTL.ITEM_CD          AS itemCda,
+		  DTL.LINK_TO_IMAGE    AS linkToImage,
+		  DTL.IMAGE_NAME       AS imageName,
+		  DTL.IMAGE_SIZE       AS imageSize,
+		  DTL.LINK_TO_PDF      AS linkToPdf,
+		  DTL.PDF_NAME         AS pdfName,
+		  DTL.PDF_SIZE         AS pdfSize,
+		  DTL.REMARK as remark,
+		  CATE.CATEGORY_NAME AS categoryName,
+		  ITEM.ITEM_NAME AS itemName
+		FROM ITEM_DTL_MST DTL
+		  LEFT JOIN CATEGORY_MST CATE ON DTL.CATEGORY_CD = CATE.CATEGORY_CD
+		  LEFT JOIN 
+		  (SELECT DISTINCT ITEM_CD, ITEM_NAME FROM ITEM_MST) ITEM
+		  ON DTL.ITEM_CD = ITEM.ITEM_CD
+		WHERE DTL.ITEM_CD = #item_cd# AND DTL.CATEGORY_CD = #category_cd#
 	</select>
 
 </sqlMap>
