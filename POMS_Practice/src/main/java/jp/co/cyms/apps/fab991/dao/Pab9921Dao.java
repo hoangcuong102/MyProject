@@ -39,6 +39,10 @@ public class Pab9921Dao extends BaseDao {
 		return (Pab9921Bean) this.queryObject("FAB9921.select04", pab9921Bean);
 	}
 	
+	//get item name
+	public String getItemNameByItemCDCateCD(Pab9921Bean pab9921Bean) throws Exception{
+		return (String) this.queryObject("FAB9921.select05", pab9921Bean);
+	}
 	
 	public static void main(String[] agvs) throws Exception {
 		Pab9921Dao dao = new Pab9921Dao();

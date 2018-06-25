@@ -105,6 +105,7 @@ public class Pab0021Action extends Pab0021Form {
 		Pab0021BL logic = new Pab0021BL();
 		// Get config bean
 		ConfigBean config = (ConfigBean) session.get(Constant.SESSION_KEY_CONFIG_INFO);
+		LOG.info("**************** Config Bean "+config.getImageDir()+"******************");
 		LOG.info("*************doEvent02 Start*************", "");
 		// ParamBean
 		Pab0021Bean paramBean = new Pab0021Bean();

@@ -15,7 +15,7 @@
 	type="text/javascript"></script>
 	<title><s:property value='getText("common_title")' /></title>
 </head>
-<body>
+<body class="myBody">
 	<div style="min-height: 620px; min-width: 1910px;">
 		<div class="container-fluid header">
 			<div class="page-header banner">
@@ -56,6 +56,7 @@
                     </div>
                     
                     <div class="container-fluid col-xs-10">
+            
                     	<form id="sab9921" class="form-horizontal">
 						<div class="form-group">
 							<label class="control-label col-md-2" for="email"><span style="color: red;">*&nbsp;</span>Category Code:</label>
@@ -135,7 +136,7 @@
 							<div class="col-md-5">
 								<div class="form-group">
 									<div class="input-group input-file" name="">
-							    		<input type="text" class="form-control"  id="file-pdf" />			
+							    		<input type="text" placeholder="Choose a file..." class="form-control"  id="file-pdf" />			
 							            <span class="input-group-btn">
 							        		<button class="btn btn-default btn-brower" id="btn-file-pdf" type="file">Browse</button>
 							    		</span>
@@ -151,7 +152,7 @@
 						<div class="row">
 							<div class="col-md-2"></div>
 							<div class="col-md-5" style="padding-bottom: 10px !important;">
-								<a id="pdf-name-file"  onclick="">XXXXXXXXXXXXXXXXXXXXX.pdf (5MB)</a>
+								<a id="pdf_name_file" style="display: none;"  onclick=""><span id="spanfilename"></span><span id="spanpdfSize"></span> </a>
 							</div>
 						</div>
 						

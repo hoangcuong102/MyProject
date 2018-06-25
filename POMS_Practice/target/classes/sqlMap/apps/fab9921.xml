@@ -22,19 +22,19 @@
 											  ORDER BY ITEM_CD ASC
 	</select>
 	<!-- get item from ITEM_DTL_MST -->
-	<select id="select04" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
+	<select id="select04" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean">
 		SELECT 
-		  DTL.CATEGORY_CD AS categoryCd,
-		  DTL.ITEM_CD          AS itemCda,
-		  DTL.LINK_TO_IMAGE    AS linkToImage,
-		  DTL.IMAGE_NAME       AS imageName,
-		  DTL.IMAGE_SIZE       AS imageSize,
-		  DTL.LINK_TO_PDF      AS linkToPdf,
-		  DTL.PDF_NAME         AS pdfName,
-		  DTL.PDF_SIZE         AS pdfSize,
+		  DTL.CATEGORY_CD AS category_cd,
+		  DTL.ITEM_CD          AS item_cd,
+		  DTL.LINK_TO_IMAGE    AS link_to_image,
+		  DTL.IMAGE_NAME       AS image_name,
+		  DTL.IMAGE_SIZE       AS image_size,
+		  DTL.LINK_TO_PDF      AS link_to_pdf,
+		  DTL.PDF_NAME         AS pdf_name,
+		  DTL.PDF_SIZE         AS pdf_size,
 		  DTL.REMARK as remark,
-		  CATE.CATEGORY_NAME AS categoryName,
-		  ITEM.ITEM_NAME AS itemName
+		  CATE.CATEGORY_NAME AS category_name,
+		  ITEM.ITEM_NAME AS item_name
 		FROM ITEM_DTL_MST DTL
 		  LEFT JOIN CATEGORY_MST CATE ON DTL.CATEGORY_CD = CATE.CATEGORY_CD
 		  LEFT JOIN 
@@ -42,5 +42,9 @@
 		  ON DTL.ITEM_CD = ITEM.ITEM_CD
 		WHERE DTL.ITEM_CD = #item_cd# AND DTL.CATEGORY_CD = #category_cd#
 	</select>
-
+	
+	<!-- Select item_name -->
+	<select id="select05" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
+		SELECT DISTINCT ITEM_NAME FROM ITEM_MST WHERE ITEM_CD = #item_cd# AND CATEGORY_CD = #category_cd# AND DELETE_FG IS NULL AND NO_USE_FG IS NULL
+	</select>
 </sqlMap>
