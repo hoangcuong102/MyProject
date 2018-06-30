@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="fad991" namespace="/fad991" extends="default">
+		<action name="sad9921" class="jp.co.cyms.apps.fad991.action.Pad9921Action">
+			<result name="success">/jsp/fad991/sad9921.jsp</result>
+				
+		</action>
+		
+	</package>
+</struts>

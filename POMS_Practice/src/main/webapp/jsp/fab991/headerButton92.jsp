@@ -8,14 +8,14 @@
 			<button class="btn btn-primary btn-logout">Logout</button>
 		</div>
 		<div class="align-button">
-			<button class="btn_delete btn btn-danger" disabled="disabled">Delete</button>
+			<button class="btn_delete btn btn-danger" disabled="disabled" onclick="doDelete()">Delete</button>
 		</div>
 		<div style="float: right; margin-right: 30px;">
 			<div class=" align-button">
-				<button class="btn-save btn btn-primary">Save</button>
+				<button class="btn-save btn btn-primary" onclick="doSave()">Save</button>
 			</div>
 			<div class=" align-button">
-				<button class="btn-close btn btn-primary">Close</button>
+				<button class="btn-close btn btn-primary" onclick="doClose()">Close</button>
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,7 @@
 package jp.co.cyms.apps.fab991.form;
 
+import java.io.File;
+
 import jp.co.cyms.base.BaseAction;
 
 public class Pab9921Form extends BaseAction {
@@ -20,8 +22,15 @@ public class Pab9921Form extends BaseAction {
 	protected String pdf_size;
 	protected String remark;
 	
+	protected File fileImage;
+	
+	protected File filepdf;
 	
 	
+	
+
+
+
 	public Pab9921Form() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -116,7 +125,27 @@ public class Pab9921Form extends BaseAction {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+	public File getFileImage() {
+		return fileImage;
+	}
+
+
+
+	public void setFileImage(File fileImage) {
+		this.fileImage = fileImage;
+	}
+
+
+
+	public File getFilepdf() {
+		return filepdf;
+	}
+
+
+
+	public void setFilepdf(File filepdf) {
+		this.filepdf = filepdf;
+	}
 	
 
 }

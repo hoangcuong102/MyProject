@@ -53,7 +53,8 @@ public class Paa0011BL extends BaseLogic {
 	public boolean hasPermissionScreen(UserBean userInfo, MenuQueryParam menuParam) throws Exception {
 		boolean check = true;
 		if (Integer.toString(Constant.GENERAL_USER_CD).equals(userInfo.getUserAuthorityCd())
-				&& !Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER.equals(menuParam.getFunctionId())) {
+				&& !Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER.equals(menuParam.getFunctionId())
+				&& !Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER2.equals(menuParam.getFunctionId())) {
 			check = false;
 		}
 		return check;
@@ -71,7 +72,8 @@ public class Paa0011BL extends BaseLogic {
 		for (MenuProperties.MenuKey data : menuEnums) {
 			MenuBean menuBean = MenuProperties.get(data);
 			if (!Integer.toString(Constant.GENERAL_USER_CD).equals(userInfo.getUserAuthorityCd())
-					|| Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER.equals(menuBean.getFunctionId())) {
+					|| Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER.equals(menuBean.getFunctionId())
+					||  Constant.FUNCTION_DISPLAY_ONLY_GENERAL_USER2.equals(menuBean.getFunctionId())) {
 				listMenu.add(menuBean);
 			}
 		}

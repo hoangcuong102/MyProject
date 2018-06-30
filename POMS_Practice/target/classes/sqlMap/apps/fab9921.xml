@@ -47,4 +47,58 @@
 	<select id="select05" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" resultClass="java.lang.String">
 		SELECT DISTINCT ITEM_NAME FROM ITEM_MST WHERE ITEM_CD = #item_cd# AND CATEGORY_CD = #category_cd# AND DELETE_FG IS NULL AND NO_USE_FG IS NULL
 	</select>
+	
+	<!-- Delete item -->
+	<update id="deleteItem_mts" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean">
+		UPDATE ITEM_MST SET 
+    		DELETE_FG = '1',
+    		UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+    	WHERE ITEM_CD = #item_cd#
+	</update>
+	
+	<!-- Update form -->
+	<update id="updateForm" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean" >
+	 UPDATE ITEM_DTL_MST SET
+          	LINK_TO_IMAGE = #link_to_image#,
+          	IMAGE_NAME = #image_name#,
+          	IMAGE_SIZE = #image_size#,
+          	LINK_TO_PDF = #link_to_pdf#,
+          	PDF_NAME = #pdf_name#,
+          	PDF_SIZE = #pdf_size#,
+          	REMARK = #remark#,
+          	UPDATED_USER = #updatedUser#,
+			UPDATED_DT_UTC = SYSDATE - #timeDifference#/24,
+			UPDATED_DT_SERVER = SYSDATE,
+			UPDATED_DT_LOCAL = #updatedDtLocal#,
+			EXCLUSIVE_FG = #exclusiveFg#
+        WHERE 
+          	ITEM_CD = #item_cd# 
+          	AND CATEGORY_CD = #category_cd#
+	
+	</update>
+	
+	<!-- Insert new Record -->
+	<insert id="insert" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9921Bean">
+	INSERT INTO ITEM_DTL_MST VALUES (
+		#updatedUser#,
+		SYSDATE - #timeDifference#/24,
+		SYSDATE,
+		#updatedDtLocal#,
+		#exclusiveFg#,
+		#category_cd#,
+		#item_cd#,
+		#link_to_image#,
+		#image_name#,
+		#image_size#,
+		#link_to_pdf#,
+		#pdf_name#,
+		#pdf_size#,
+		#remark#
+		
+	)
+	</insert>
 </sqlMap>

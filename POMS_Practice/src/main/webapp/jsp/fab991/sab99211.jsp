@@ -109,7 +109,7 @@
 									<div class="input-group input-file" name="">
 							    		<input type="text" class="form-control" placeholder='Choose a file...' id="file-image" />			
 							            <span class="input-group-btn">
-							        		<button class="btn btn-default btn-brower" id="btn-file-image" type="file">Browse</button>
+							        		<button class="btn btn-default btn-brower" id="btn-file-image" >Browse</button>
 							    		</span>
 									</div>
 								</div>
@@ -141,7 +141,7 @@
 							        		<button class="btn btn-default btn-brower" id="btn-file-pdf" type="file">Browse</button>
 							    		</span>
 									</div>
-									<input type="file" id="pdfData" name="pdfData" class="form-control" accept="image/*.pdf" style="display: none;" onchange="doUpload(0)"/>
+									<input type="file" id="pdfData" name="pdfData" class="form-control" style="display: none;" onchange="doUpload(1)"/>
 									<input type="hidden" id="linkToPdf" name="linkToPdf" value="" />
                             		<input type="hidden" id="pdfName" name="pdfName" value="" />
                             		<input type="hidden" id="pdfSize" name="pdfSize" value="" />
@@ -169,26 +169,98 @@
 		</div>
 		<jsp:include page="../common/footer.jsp"></jsp:include>
 	</div>
-	<!-- ConfirmOverloadImage -->
-	<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-centered" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
-	      <div class="modal-body">
-	        ...
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary">Save changes</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
 	
+	        <!-- Modal confirm Overwrite-->
+		<div class="modal fade" id="modalConfirmOverwrite" role="dialog" data-keyboard="false" data-backdrop="static">
+		    <div class="modal-dialog">
+		      <!-- Modal content-->
+		      <div class="modal-content" style="margin-right: 50px;  margin-left: 70px;">
+		        <div class="modal-header" style="padding:0px 10px;">
+		          <button type="button" class="close" onclick="doCloseConfirmOverwrite();">&times;</button>
+		          <h4><span class="glyphicon glyphicon-question-sign"></span>    Confirmation</h4>
+		        </div>
+		        <div class="modal-body" >
+		          <form role="form">
+		            <div class="row">
+		            	<div class="col-md-12 text-right form-group required no-padding-right">
+		              		<p style="float:left"><img src="<s:url value="/"/>style/imgs/confirm.png" width="30" height="30"><span id="contentConfirmOverwrite" style="margin-left: 15px;"></span></p>
+		              	</div>
+		            </div>
+					<div class="row">
+						<div class="col-md-2"></div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary center-block btn-block" id="buttonYesOverwrite" data-toggle="modal" data-dismiss="modal">Yes</button>
+						</div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary center-block btn-block btn-grey" id="buttonNoOverwrite" onclick="doCloseConfirmOverwrite();">No</button>
+						</div>
+					</div>
+		          </form>
+		        </div>
+		      </div>
+		    </div>
+		</div>
+		<!-- End Modal Confirm Overwrite -->
+		<!-- Modal confirm Valid-->
+		<div class="modal fade" id="modalConfirmValid" role="dialog" data-keyboard="false" data-backdrop="static">
+		    <div class="modal-dialog">
+		      <!-- Modal content-->
+		      <div class="modal-content" style="margin-right: 50px;  margin-left: 70px;">
+		        <div class="modal-header" style="padding:0px 10px;">
+		          <button type="button" class="close" onclick="doCloseConfirmValid();">&times;</button>
+		          <h4><span class="glyphicon glyphicon-question-sign"></span>    Confirmation</h4>
+		        </div>
+		        <div class="modal-body" >
+		          <form role="form">
+		            <div class="row">
+		            	<div class="col-md-12 text-center form-group required no-padding-right no-margin-bottom">
+		              		<p style="float:left"><img src="<s:url value="/"/>style/imgs/confirm.png" width="30" height="30"><span id="contentConfirmValid" style="margin-left: 10px; margin-right: 10px;"></span></p>
+		              	</div>
+		            </div>
+					<div class="row">
+						<div class="col-md-2"></div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary center-block btn-block" id="buttonYesValid" data-toggle="modal" data-dismiss="modal">Yes</button>
+						</div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary center-block btn-block btn-grey" id="buttonNoValid" onclick="doCloseConfirmValid();">No</button>
+						</div>
+					</div>
+		          </form>
+		        </div>
+		      </div>
+		    </div>
+		</div>
+		<!-- Modal confirm end-->
+		<!-- Modal confirm Invalid-->
+		<div class="modal fade" id="modalConfirmInvalid" role="dialog" data-keyboard="false" data-backdrop="static">
+		    <div class="modal-dialog modal-sm">
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header" style="padding:0px 10px;">
+		          <button type="button" class="close" onclick="doCloseConfirmInvalid();">&times;</button>
+		          <h4><span class="glyphicon glyphicon-remove-circle"></span>    Error</h4>
+		        </div>
+		        <div class="modal-body" >
+		          <form role="form">
+		            <div class="row">
+		            	<div class="col-md-12 text-right form-group required no-padding-right">
+		              		<p style="float:left"><img src="<s:url value="/"/>style/imgs/errorIcon.png" width="30" height="30"><span id="contentConfirmInvalid" style="margin-left: 15px;"></span></p>
+		              	</div>
+		            </div>
+					<div class="row">
+						<div class="col-md-4"></div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-primary center-block btn-block" id="buttonYesInvalid" data-toggle="modal" data-dismiss="modal" onclick="doCloseConfirmInvalid();">OK</button>
+						</div>
+						<div class="col-md-4">
+						</div>
+					</div>
+		          </form>
+		        </div>
+		      </div>
+		    </div>
+		</div>
+		<!-- Modal confirm end-->
 </body>
 </html>

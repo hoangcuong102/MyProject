@@ -26,6 +26,14 @@ public class MenuProperties {
 		MENU_32,
 		MENU_33,
 		MENU_34,
+		MENU_35,
+		MENU_36,
+		MENU_40,
+		MENU_41,
+		MENU_42,
+		MENU_50,
+		MENU_51,
+		MENU_55
 		;
 
 		public static MenuKey get(String key) {

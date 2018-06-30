@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAC9911">
+
+	<!-- get company code -->
+	<select id="getCompanyCode" resultClass="java.lang.String">
+		SELECT x.COMPANY_CD AS
+		Code FROM POMS_ADMIN.COMPANY_MST x Order By x.COMPANY_CD
+	</select>
+
+	<!-- get all order process -->
+	<select id="getOrderProcess" parameterClass="jp.co.cyms.apps.fac099.bean.Pac9921Bean"
+		resultClass="jp.co.cyms.apps.fac099.bean.OrderProgressBean">
+				SELECT 
+			y.ORDER_ID,
+			y.DEPT_CD,
+			y.TTL_MRC,
+			y.TTL_OTC,
+			z.CATEGORY_ABBREV,
+			x.ITEM_QTY,
+			x.UPDATED_DT_LOCAL,
+			x.UPDATED_USER,
+			x.SANKYU_REGIST_DT,
+			x.SANKYU_ORDER_DT,
+			x.SEA_REQUEST_DT,
+			x.KDDI_ACCEPT_DT,
+			x.KDDI_ORDER_DT,
+			x.KDDI_RECEIVE_DT,
+			w.Total,
+			w.DELIVER_DT,
+			x.KDDI_LEASE_DT,
+			w.DO_NO
+			
+		FROM POMS_ADMIN.ORDER_DTL x 
+		JOIN POMS_ADMIN.ORDERS y ON x.ORDER_ID = y.ORDER_ID 
+		JOIN POMS_ADMIN.CATEGORY_MST z ON x.ORDER_ID = y.ORDER_ID AND x.CATEGORY_CD = z.CATEGORY_CD 
+		JOIN (
+			SELECT 
+				COUNT(*) AS Total, 
+				ORDER_LEASE.ORDER_ID, 
+				ORDER_LEASE.CATEGORY_CD, 
+				ORDER_LEASE.DO_NO, 
+				ORDER_DO.DELIVER_DT 
+			FROM POMS_ADMIN.ORDER_LEASE FULL OUTER JOIN POMS_ADMIN.ORDER_DO ON ORDER_LEASE.DO_NO = ORDER_DO.DO_NO 
+			GROUP BY ORDER_LEASE.ORDER_ID, ORDER_LEASE.CATEGORY_CD, ORDER_LEASE.DO_NO, ORDER_DO.DELIVER_DT 
+			ORDER BY ORDER_LEASE.DO_NO ASC) w 
+		ON x.ORDER_ID = w.ORDER_ID AND x.CATEGORY_CD = w.CATEGORY_CD
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="companyCode">
+				x.ORDER_ID LIKE '%$companyCode$%'
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY x.ORDER_ID DESC, x.CATEGORY_CD DESC
+	</select>
+	
+</sqlMap>

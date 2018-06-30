@@ -185,4 +185,11 @@ body{
 	object-position: 0 0;
 }
 
-
+.input-error{
+	border: 1px solid red !important;
+}
+.btn-error{
+	border-top: 1px solid red !important;
+	border-right: 1px solid red !important;
+	border-bottom: 1px solid red !important;
+}

@@ -17,5 +17,7 @@
 	<sqlMap resource="sqlMap/apps/fac0024.xml" />
 	<sqlMap resource="sqlMap/apps/fad0011.xml" />
 	<sqlMap resource="sqlMap/apps/fad0021.xml" />
+	<sqlMap resource="sqlMap/apps/fac9921.xml" />
 	<sqlMap resource="sqlMap/apps/fab9921.xml"/>
+	<sqlMap resource="sqlMap/apps/fab9931.xml" />	
 </sqlMapConfig>

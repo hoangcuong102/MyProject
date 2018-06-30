@@ -627,7 +627,7 @@ function doEventDialog01(idEvent, element){
 			formData.append("pdfName", $("#pdfName").val().trim());
 			formData.append("pdfSize", $("#pdfSize").val().trim());
 		}
-		
+		console.log(formData.categoryCd);
 		loading_ajax();
 	    $.ajax({
 	        cache: false,

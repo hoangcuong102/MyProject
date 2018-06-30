@@ -120,7 +120,10 @@ public class ErrorProperties {
 		// KDDI Lease Information Entry
 		LIE_0001,
 		LIE_0002,
-		LIE_0003
+		LIE_0003,
+		
+		//Cuong 
+		CUONG_0001,
 		;
 
 		public static ExceptionKey get(String key) {

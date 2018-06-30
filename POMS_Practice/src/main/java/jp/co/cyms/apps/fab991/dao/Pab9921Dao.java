@@ -44,6 +44,20 @@ public class Pab9921Dao extends BaseDao {
 		return (String) this.queryObject("FAB9921.select05", pab9921Bean);
 	}
 	
+	// delete item
+	public int deleteItem_MST(Pab9921Bean pab9921Bean) throws Exception{
+		return this.delete("FAB9921.deleteItem_mts", pab9921Bean);
+	}
+	
+//	Update
+	public int updateItem_Dtl_Mst(Pab9921Bean pab9921Bean) throws Exception{
+		return this.update("FAB9921.updateForm", pab9921Bean);
+	}
+//	iNSERT
+	public int insertItem_Dtl_Mst(Pab9921Bean pab9921Bean) throws Exception{
+		return this.delete("FAB9921.insert", pab9921Bean);
+	}
+	
 	public static void main(String[] agvs) throws Exception {
 		Pab9921Dao dao = new Pab9921Dao();
 		System.out.println(dao.getListCategory_CD().size());

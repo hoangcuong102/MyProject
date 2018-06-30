@@ -13,6 +13,17 @@
 
 		</action>
 		
+		
+		<!-- Get Userinfo and Message Error -->
+		
+		<action name="getInfoUser_MessErr" method="getAllInfo" class="jp.co.cyms.common.action.CommonAction">
+			<result name="success" type="json"></result>
+			<result name="login" type="redirectAction">
+				<param name="namespace">/faa001</param>
+				<param name="actionName">saa0011</param>
+			</result>
+		</action>
+		
 		<!-- Event using to get Item_CD following Category_CD -->
 		<action name="sab9921_01" method="doEvent01" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
 			<result name="success" type="json"></result>
@@ -24,8 +35,61 @@
 			<result name="success" type="json"></result>
 			<result name ="error" type="json"></result>
 		</action>
+		
+		<!-- Delete Item_MST -->
+		<action name="deleteItem" method="deleteItemMST" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="json"></result>
+			<result name ="error" type="json"></result>
+		
+		</action>
+		
+		<!-- check PDF File -->
+		<action name="checkFile" method="isExistedPdf" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="json"></result>
+			<result name ="error" type="json"></result>
+		</action>
+		
+		<!-- Download PDF file  -->
+		<action name="download" method="downloadpdf" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${catalogPdfName}"</param>
+				<param name="bufferSize">1024</param>
+				<param name="inputName">inputStream</param>
+			</result>
+			<result name ="error" type="json"></result>
+		</action>
+		
+		<!-- Update -->
+		<action name="sab9921_6" method="update" class="jp.co.cyms.apps.fab991.action.Pab9921Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		
 		<!-- End Action SAB9921 -->
 
+		<!-- Start action SAB9931 created by DuyNK -->
+		<!-- action load page -->
+		<action name="sab9931" method="execute"
+			class="jp.co.cyms.apps.fab991.action.Pab9931Action">
+			<result name="success">/jsp/fab991/sab9931.jsp</result>
+		</action>
+		
+		<!-- action get data item -->
+		<action name="sab9931_getDataItem" method="DataItem" 
+			class="jp.co.cyms.apps.fab991.action.Pab9931Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		
+		<!-- action save data active and inactive item -->
+		<action name="sab9931_saveData" method="saveDataItem" 
+			class="jp.co.cyms.apps.fab991.action.Pab9931Action">
+			<result name="success" type="json"></result>
+			<result name="error" type="json"></result>
+		</action>
+		<!-- End action SAB9931 -->
 	</package>
 
 </struts>

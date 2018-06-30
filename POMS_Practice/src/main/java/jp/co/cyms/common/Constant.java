@@ -139,6 +139,7 @@ public class Constant {
 	public static final int SANKYU_ADMIN_CD = 3;
 	public static final String SANKYU_ADMIN = "SANKYU Admin";
 	public static final String FUNCTION_DISPLAY_ONLY_GENERAL_USER = "fac001";
+	public static final String FUNCTION_DISPLAY_ONLY_GENERAL_USER2 = "fac099";
 
 	public static final String SESSION_KEY_CONFIG_INFO = "configInfo";
 	public static final String SESSION_KEY_ALL_COUNTRIES = "allCountries";

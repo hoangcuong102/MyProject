@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="FAB9931">
+	<!-- get All Country -->
+	<select id="getAllCountry" resultClass="jp.co.cyms.apps.fab991.bean.Pab9931CountryBean">
+		SELECT COUNTRY_CD as countryCD 
+		FROM COUNTRY_MST
+		ORDER BY DISPLAY_ORDER
+	</select>
+	
+	<!-- get All Category -->
+	<select id="getAllCategory" resultClass="jp.co.cyms.apps.fab991.bean.Pab9931CategoryBean">
+		SELECT CATEGORY_CD as categoryCD ,
+			   CATEGORY_NAME as categoryName 
+		FROM CATEGORY_MST
+	</select>
+	
+	<!-- get All Item -->
+	<select id="getItemAll" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" resultClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" >
+		SELECT CATEGORY_CD as categoryCD, 
+		       COUNTRY_CD as countryCD,
+		       ITEM_CD as itemCD,
+		       ITEM_NAME as itemName,
+		       '-1' as activeFG
+		FROM ITEM_MST 
+		WHERE ( DELETE_FG IS NULL OR NO_USE_FG IS NULL) 
+      			AND CATEGORY_CD = #categoryCD# 
+		        AND COUNTRY_CD = #countryCD# 
+		        AND ITEM_CD NOT IN (  SELECT ITEM_CD 
+		                              FROM ACTIVE_MST 
+		                              WHERE CATEGORY_CD = #categoryCD# 
+		                                    AND COUNTRY_CD = #countryCD# )
+		ORDER BY ITEM_CD
+	</select>
+	
+	<!-- get Item Active -->
+	<select id="getItemActive" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" 
+								resultClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean">
+		SELECT CATEGORY_CD as categoryCD, 
+		       COUNTRY_CD as countryCD,
+		       ITEM_CD as itemCD,
+		       ITEM_NAME as itemName,
+		       '1' as activeFG
+		FROM ITEM_MST 
+		WHERE ( DELETE_FG IS NULL OR NO_USE_FG IS NULL) 
+		        AND CATEGORY_CD = #categoryCD#  
+		        AND COUNTRY_CD = #countryCD# 
+		        AND ITEM_CD IN (    SELECT ITEM_CD 
+		                            FROM ACTIVE_MST 
+		                            WHERE CATEGORY_CD = #categoryCD# 
+		                                      AND COUNTRY_CD = #countryCD#
+		                                      AND ACTIVE_FG = '1'
+		                       )
+		ORDER BY ITEM_CD
+	</select>
+	
+	<!-- get Item Inactive -->
+	<select id="getItemInactive" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" 
+								resultClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean">
+		SELECT CATEGORY_CD as categoryCD, 
+		       COUNTRY_CD as countryCD,
+		       ITEM_CD as itemCD,
+		       ITEM_NAME as itemName,
+		       '0' as activeFG
+		FROM ITEM_MST 
+		WHERE ( DELETE_FG IS NULL OR NO_USE_FG IS NULL) 
+		        AND CATEGORY_CD = #categoryCD#  
+		        AND COUNTRY_CD = #countryCD# 
+		        AND ITEM_CD IN (    SELECT ITEM_CD 
+		                            FROM ACTIVE_MST 
+		                            WHERE CATEGORY_CD = #categoryCD# 
+		                                      AND COUNTRY_CD = #countryCD#
+		                                      AND ACTIVE_FG = '0'
+		                       )
+		ORDER BY ITEM_CD
+	</select>
+	
+	<!-- get a Item -->
+	<select id="getItem"  parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" 
+						  resultClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean">
+		SELECT  CATEGORY_CD as categoryCD, 
+		        COUNTRY_CD as countryCD,
+		        ITEM_CD as itemCD,
+		        ACTIVE_FG as activeFG
+		FROM ACTIVE_MST
+		WHERE   CATEGORY_CD = #categoryCD#
+		        AND COUNTRY_CD = #countryCD#
+		        AND ITEM_CD = #itemCD#
+		        AND ACTIVE_FG = #activeFG#
+	</select>
+	
+	<!-- update item -->
+	<update id="updateItem" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" >
+		UPDATE 	ACTIVE_MST 
+		SET 	ACTIVE_FG = #activeFG# 
+		WHERE   CATEGORY_CD = #categoryCD#
+		        AND COUNTRY_CD = #countryCD#
+		        AND ACTIVE_FG = 'X'
+	</update>
+	
+	<!-- update item to X -->
+	<update id="updateItemToX" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" >
+		UPDATE 	ACTIVE_MST 
+		SET 	ACTIVE_FG = 'X' 
+		WHERE   CATEGORY_CD = #categoryCD#
+		        AND COUNTRY_CD = #countryCD#
+		        AND ITEM_CD = #itemCD#
+		        AND ACTIVE_FG = #activeFG# 	
+	</update>
+	
+	<!-- delete item from active_mst -->
+	<delete id="deleteItem" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" >
+		DELETE 	FROM ACTIVE_MST
+		WHERE   CATEGORY_CD = #categoryCD#
+	        	AND COUNTRY_CD = #countryCD#
+	        	AND ACTIVE_FG = #activeFG#
+	</delete>
+	
+	<!-- insert item to active_mst -->
+	<insert id="insertItem" parameterClass="jp.co.cyms.apps.fab991.bean.Pab9931ItemBean" >
+		INSERT INTO ACTIVE_MST (UPDATED_USER,
+		                        UPDATED_DT_UTC,
+		                        UPDATED_DT_SERVER,
+		                        UPDATED_DT_LOCAL,
+		                        EXCLUSIVE_FG,
+		                        COUNTRY_CD,
+		                        CATEGORY_CD,
+		                        ITEM_CD,
+		                        ACTIVE_FG) 
+		VALUES ( #updatedUser#, 
+				 SYSDATE - #timeDifference#/24,
+				 SYSDATE,
+				 #updatedDtLocal#,
+				 #exclusiveFg#,
+				 #countryCD#,
+	             #categoryCD#,
+	             #itemCD#,
+	             #activeFG#
+				)
+	</insert>
+</sqlMap>
